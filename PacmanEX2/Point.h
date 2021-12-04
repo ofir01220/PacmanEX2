@@ -8,7 +8,7 @@
 using namespace std;
 
 class Point {
-	int x = 3, y = 1;
+	int x = 25, y = 1;
 public:
 	void setXandY(int _x, int _y) {
 		x = _x;

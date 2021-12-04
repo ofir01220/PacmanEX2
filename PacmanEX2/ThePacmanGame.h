@@ -10,7 +10,7 @@ class ThePacmanGame {
 	int numOfBoards;
 	int numOfGhosts;
 	Ghost ghost[4];
-	Board board[4];
+	Board board;
 public:
 	void init();
 	void run();

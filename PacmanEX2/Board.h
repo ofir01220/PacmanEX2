@@ -9,7 +9,7 @@ class Board {
 
 public:
   char boardArr[25][80];
-  void activateBoard();
+  void activateBoard(Pacman &p);
   void PrintBoard();
   void setBoardCol(int col);
   void setBoardRow(int row);

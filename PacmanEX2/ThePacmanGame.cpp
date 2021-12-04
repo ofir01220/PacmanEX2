@@ -6,9 +6,9 @@ void ThePacmanGame::init()
 	player.setFigure((char)002);
 	ghost[0].setFigure((char)234);
 	ghost[1].setFigure((char)234);
-	board.activateBoard();
+	board.activateBoard(player);
 	board.PrintBoard();
-	player.body.setXandY(3, 1);
+	//player.body.setXandY(3, 1);
 	ghost[0].body.setXandY(36, 12);
 	ghost[1].body.setXandY(48, 12);
 }
@@ -38,7 +38,7 @@ void ThePacmanGame::run()
 			flag = 1;
 		}
 		if (flag == 1) /*starts the sleep function only if the game starts*/
-			Sleep(150);
+			Sleep(225);
 
 		GhostEatPacman(life, flag, start, dir, ghostDir, score);
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
@@ -163,8 +163,8 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
-		board.activateBoard();
-		player.body.setXandY(3, 1);
+		board.activateBoard(player);
+		//player.body.setXandY(3, 1);
 		ghost[0].body.setXandY(36, 12);
 		ghost[1].body.setXandY(48, 12);
 		system("CLS");
@@ -222,7 +222,7 @@ void ThePacmanGame::lostGame() {
 }
 
 void ThePacmanGame::yummy(int& score, int life) {
-	if (board.boardArr[player.body.getY()][player.body.getX()] == '.') { /*if the user ate crumb.*/
+	if (board.boardArr[player.body.getY()][player.body.getX()] == '*') { /*if the user ate crumb.*/
 		board.boardArr[player.body.getY()][player.body.getX()] = ' '; /*we delete the crumb from the board*/
 		score++;
 		gotoxy(0, 24);
@@ -259,18 +259,18 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	ghost[0].setDirection(ghostDir[0]);
 	ghost[0].move();
 
-	if (board.boardArr[ghost0Y][ghost0X] == '.') {
+	if (board.boardArr[ghost0Y][ghost0X] == '*') {
 		gotoxy(ghost0X, ghost0Y);
-		cout << '.';
+		cout << '*';
 	}
 	while (!checkCollisionGhost(ghostDir[1], 1)) /*Checks if the next move is not valid.*/
 		ghostDir[1] = rand() % 4;
 
 	ghost[1].setDirection(ghostDir[1]);
 	ghost[1].move();
-	if (board.boardArr[ghost1Y][ghost1X] == '.') {
+	if (board.boardArr[ghost1Y][ghost1X] == '*') {
 		gotoxy(ghost1X, ghost1Y);
-		cout << '.';
+		cout << '*';
 	}
 	countMovment++;
 }

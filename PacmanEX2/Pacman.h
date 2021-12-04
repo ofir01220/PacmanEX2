@@ -19,6 +19,7 @@ public:
 		figure = c;
 	}
 	void move();
+	void setBody(int i, int k) { body.setXandY(i, k); };
 	int getDirection(char key);
 	void setDirection(int dir) {
 		direction = dir;

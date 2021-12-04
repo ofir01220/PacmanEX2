@@ -54,10 +54,10 @@ void Board::setBoardRow(int row) {
 	this->rowboard1 = row;
 
 }
-void Board::activateBoard() {
+void Board::activateBoard(Pacman &p) {
 	int i = 0, k = 0;
 	ifstream myReadFile;
-	myReadFile.open("boardtest.txt");
+	myReadFile.open("beforchange.txt");
 	char niceChar;
 	while (!myReadFile.eof()) {
 		  niceChar = myReadFile.get();
@@ -66,13 +66,17 @@ void Board::activateBoard() {
 			k = -1;
 			i++;
 		}
-		if (niceChar == '#') {
+		if (niceChar == '#')
 			boardArr[i][k] = char(178);
-		}
-		else if (niceChar == ' ')
-			boardArr[i][k] = '*';
 		else if (niceChar == '%')
 			boardArr[i][k] = ' ';
+		else if (niceChar == ' ')
+			boardArr[i][k] = '*';
+		else if (niceChar == '@') {
+			boardArr[i][k] = ' ';
+			p.setBody(k, i);
+		}
+		
 		k++;
 	}
 	setBoardRow(i + 1);
