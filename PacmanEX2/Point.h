@@ -9,7 +9,7 @@ using namespace std;
 
 class Point {
 	int x = 25, y = 1;
-	int firstx, firsty;
+	int firstx = 0, firsty = 0;
 public:
 	void setXandY(int _x, int _y) {
 		x = firstx = _x;

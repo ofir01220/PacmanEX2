@@ -9,7 +9,6 @@ class Board {
 	char mat[25][80];
 	char boardArr[25][80];
 	friend class ThePacmanGame;
-
 public:
   void activateBoard(Pacman& p, Ghost ghost[],int &numOfGhosts);
   void PrintBoard();
