@@ -38,7 +38,7 @@ void ThePacmanGame::run()
 			flag = 1;
 		}
 		if (flag == 1) /*starts the sleep function only if the game starts*/
-			Sleep(225);
+			Sleep(200);
 
 		GhostEatPacman(life, flag, start, dir, ghostDir, score);
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
@@ -188,7 +188,7 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 }
 
 int ThePacmanGame::endGameConditions(const int score, const int life) {
-	if (score == 223) { /*max point.*/
+	if (score == board.breadCrumbs) { /*max point.*/
 		winGame();
 		return 0;
 	}
@@ -255,13 +255,12 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	}
 	avoidTunnels(ghostDir);
 	for (int i = 0; i <= numOfGhosts; i++) {
-		while (!checkCollisionGhost(ghostDir[i], i))  /*Checks if the next move is not valid.*/
+		while (!checkCollisionGhost(ghostDir[i], i)) /* Checks if the next move is not valid. */
 			ghostDir[i] = rand() % 4;
 		int xBeforeMove = ghost[i].body.getX();
 		int yBeforeMove = ghost[i].body.getY();
 		ghost[i].setDirection(ghostDir[i]);
 		ghost[i].move();
-
 
 		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
 			gotoxy(xBeforeMove, yBeforeMove);
@@ -309,7 +308,7 @@ int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 
 void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score) {
 	int xPlayer = player.body.getX(), yPlayer = player.body.getY();
-	for (int i = 0; i < numOfGhosts; i++) {
+	for (int i = 0; i <= numOfGhosts; i++) {
 		if ((xPlayer == ghost[i].body.getX()) && (yPlayer == ghost[i].body.getY())) {
 			/* If one of the ghosts eat pacman. */
 				--life;
@@ -322,15 +321,11 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 			system("CLS");
 			board.PrintBoard();
 			printCreatures();
-			ghost[0].setDirection(0);
-			ghost[1].setDirection(0);
-			ghost[2].setDirection(0);
-			ghost[3].setDirection(0);
 			player.setDirection(0);
-			for (int k = 0; k < numOfGhosts; k++)
-				//gotoxy(ghost[k].body.getX(), ghost[k].body.getY());
-				//cout << board.boardArr[ghost[k].body.getY()][ghost[k].body.getX()];
+			for (int k = 0; k <= numOfGhosts; k++) {
+				ghost[k].setDirection(0);
 				dir = ghostDir[k] = 0;
+			}
 			break; /* avoid from being eaten twice(if the ghosts are on the same spot) */
 		}
 	}
@@ -461,7 +456,7 @@ void ThePacmanGame::ghostMovementBest() {
 	Point pacman, currGhost;
 	vector<int> path;
 	int lastX, lastY;
-	for (int i = 0; i < numOfGhosts; i++) {
+	for (int i = 0; i <= numOfGhosts; i++) {
 		pacman.setXandY(player.body.getY(), player.body.getX());
 		currGhost.setXandY(ghost[i].body.getY(), ghost[i].body.getX());
 		path = shortestPath(board.mat, board.rowboard1, board.colboard1, currGhost, pacman);
@@ -473,7 +468,6 @@ void ThePacmanGame::ghostMovementBest() {
 			gotoxy(lastX, lastY);
 			cout << '*';
 		}
-		ghost[i].move();
 		board.mat[player.body.getY()][player.body.getX()] = '1';
 		board.mat[ghost[i].body.getY()][ghost[i].body.getX()] = '1';
 	}

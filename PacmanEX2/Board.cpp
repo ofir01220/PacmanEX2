@@ -55,14 +55,21 @@ void Board::setBoardRow(int row) {
 
 }
 void Board::activateBoard(Pacman &p, Ghost ghost[],int &numOfGhosts) {
-	int i = 0, k = 0, countOfGhosts = 0;
+	breadCrumbs = 0;
+	int i = 0, k = 0;
 	ifstream myReadFile;
-	myReadFile.open("boardtest.txt");
-	char niceChar;
+	myReadFile.open("board_02.txt");
+	char niceChar = ' ', lastChar;
 	while (!myReadFile.eof()) {
+		lastChar = niceChar;
 		  niceChar = myReadFile.get();
 		if (niceChar == '\n') {
-			setBoardCol(k);
+			if (lastChar != '&' && i == 0) {
+				setBoardCol(k);
+			}
+			else if (lastChar == '&' && i == 0 && k != 1) {
+				setBoardCol(k + 19);
+			}
 			k = -1;
 			i++;
 		}
@@ -70,22 +77,27 @@ void Board::activateBoard(Pacman &p, Ghost ghost[],int &numOfGhosts) {
 			boardArr[i][k] = char(178);
 		else if (niceChar == '%')
 			boardArr[i][k] = ' ';
-		else if (niceChar == ' ')
+		else if (niceChar == ' ') {
 			boardArr[i][k] = '*';
+			breadCrumbs++;
+		}
 		else if (niceChar == '@') {
 			boardArr[i][k] = ' ';
-			p.body.setXandY(k,i);
+			p.body.setXandY(k, i);
 		}
 		else if (niceChar == '$') {
-			ghost[countOfGhosts].body.setXandY(k, i);
-			countOfGhosts++;
+			ghost[numOfGhosts].body.setXandY(k, i);
+			numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}
+		else if (niceChar == '&')
+			boardArr[i][k] = ' ';
+
+		
 		
 		k++;
 	}
 	setBoardRow(i + 1);
-	numOfGhosts = countOfGhosts - 1;
 }
 void Board::initMat() {
 	/*initilize hidden array of binnary numbers('1' - valid pos, '0' - not valid pos)*/

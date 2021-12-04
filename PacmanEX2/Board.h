@@ -4,7 +4,7 @@
 #include <fstream>
 class Board {
 	enum { ROW = 25, COLUMN = 80 };
-	int rowboard1 = 0, colboard1 = 0;
+	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
 	char* boardname;
 	char mat[25][80];
 	char boardArr[25][80];
