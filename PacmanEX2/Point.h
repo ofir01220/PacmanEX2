@@ -12,8 +12,12 @@ class Point {
 	int firstx = 0, firsty = 0;
 public:
 	void setXandY(int _x, int _y) {
-		x = firstx = _x;
-		y = firsty = _y;
+		x = _x;
+		y = _y;
+	}
+	void setStartPos(int _x, int _y) {
+		firstx = _x;
+		firsty = _y;
 	}
 	void draw(char ch); /*to draw the figure*/
 	void movePacman(int direction);

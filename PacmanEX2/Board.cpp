@@ -58,7 +58,7 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts) {
 	breadCrumbs = numOfGhosts = 0;
 	int i = 0, k = 0, flag = 1, secFlag = 1;
 	ifstream myReadFile;
-	myReadFile.open("board_01.txt");
+	myReadFile.open("board_02.txt");
 	char niceChar = ' ', lastChar = ' ';
 	while (!myReadFile.eof()) {
 		if(lastChar != '&' || niceChar != '\n')
@@ -96,9 +96,11 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts) {
 		else if (niceChar == '@') {
 			boardArr[i][k] = ' ';
 			p.body.setXandY(k, i);
+			p.body.setStartPos(k, i);
 		}
 		else if (niceChar == '$') {
 			ghost[numOfGhosts].body.setXandY(k, i);
+			ghost[numOfGhosts].body.setStartPos(k, i);
 			numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}

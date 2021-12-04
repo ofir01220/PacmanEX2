@@ -366,22 +366,22 @@ void ThePacmanGame::printCreatures() {
 
 void ThePacmanGame::movingThroughTunnel() {
 	if (player.body.getY() == board.topL.getY()) {
-		gotoxy(player.body.getY(), player.body.getX());
+		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
 		player.body.setXandY(player.body.getX(), board.botR.getY() - 1);
 	}
 	if (player.body.getY() == board.botR.getY()) {
-		gotoxy(player.body.getY(), player.body.getX());
+		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
 		player.body.setXandY(player.body.getX(), board.topL.getY() + 1);
 	}
 	if (player.body.getX() == board.topL.getX()) {
-		gotoxy(player.body.getY(), player.body.getX());
+		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
 		player.body.setXandY(board.botR.getX() - 1, player.body.getY());
 	}
 	if (player.body.getX() == board.botR.getX()) {
-		gotoxy(player.body.getY(), player.body.getX());
+		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
 		player.body.setXandY(board.botR.getX() + 1, player.body.getY());
 	}
