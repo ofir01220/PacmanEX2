@@ -1,5 +1,5 @@
-#ifndef _THEPACMANGAMEH
-#define _THEPACMANGAMEH
+#ifndef _THEPACMANGAME_H
+#define _THEPACMANGAME_H
 
 #include "io_utils.h"
 #include "Board.h"
@@ -28,8 +28,9 @@ public:
     void winGame();
     void lostGame();
     void yummy(int& score, int life); /* check if the pacman ate a bread crumb */
-        void checkValidKey(int key, int& dir, int& lastDir, int& life, int& score, int& flag); /* checks if the player input is valid */
-        void printCreatures();
+    void checkValidKey(int key, int& dir, int& lastDir, int& life, int& score, int& flag); /* checks if the player input is valid */
+    void printCreatures();
+    void movingThroughTunnel();
     void ghostMovementNovice(int* ghostDir, int& countMovment);
     void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score);
     void avoidTunnels(int ghostDir[2]); /* to not let the ghosts enter the tunnels */

@@ -10,23 +10,23 @@ void Point::movePacman(int dir) {
 	switch (dir) {
 	case 0: // UP
 		y = y - 1;
-		if (y < 1)
-			y = 23;
+		//if (y < 1)
+		//	y = 23;
 		break;
 	case 1: // DOWN
 		y = y + 1;
-		if (y > 23)
-			y = 0;
+		//if (y > 23)
+		//	y = 0;
 		break;
 	case 2: // LEFT
 		x = x - 1;
-		if (x < 1)
-			x = 78;
+		//if (x < 1)
+		//	x = 78;
 		break;
 	case 3: // RIGHT
 		x = x + 1;
-		if (x > 77)
-			x = 0;
+		//if (x > 79)
+		//	x = 0;
 		break;
 	case 4:
 		break;

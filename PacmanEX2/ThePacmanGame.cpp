@@ -4,11 +4,9 @@ void ThePacmanGame::init()
 {
 	player.setArrowKeys("wxadsWXADS");
 	player.setFigure((char)002);
-	ghost[0].setFigure((char)234);
-	ghost[1].setFigure((char)234);
-	ghost[2].setFigure((char)234);
-	ghost[3].setFigure((char)234);
-	board.activateBoard(player,ghost,this->numOfGhosts);
+	board.activateBoard(player, ghost, this->numOfGhosts);
+	for(int i = 0; i < numOfGhosts; i++)
+		ghost[i].setFigure((char)234);
 	board.PrintBoard();
 	board.initMat();
 }
@@ -19,6 +17,7 @@ void ThePacmanGame::run()
 	printCreatures();
 	gotoxy(0, 24);
 	cout << "score: " << score << ' ' << "life: " << life;
+
 	do {
 		lastDir = dir; /*if the player selects a direction that will hit a wall, we avoid that direction and continue on the last direction (see lines 29-31)*/
 		if (_kbhit())
@@ -34,6 +33,7 @@ void ThePacmanGame::run()
 		player.setDirection(dir);
 		if (start) {
 			player.move();
+			movingThroughTunnel();
 			yummy(score, life); /*checks if the pacman ate a crumb.*/
 			flag = 1;
 		}
@@ -119,7 +119,7 @@ void ThePacmanGame::mainMenu() {
 		}
 		if (choice == '9') {
 			system("CLS");
-			cout << "**GOOD BYE***" << endl;
+			cout << "***GOOD BYE***" << endl;
 			exit(0);
 		}
 		system("CLS");
@@ -178,11 +178,14 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
+		system("CLS");
 		init(); /*to init the game from the begining */
 	}
-	system("CLS");
-	board.PrintBoard();
-	printCreatures();
+	else {
+		system("CLS");
+		board.PrintBoard();
+		printCreatures();
+	}
 	gotoxy(0, 24);
 	cout << "score: " << score << ' ' << "life: " << life;
 }
@@ -254,7 +257,7 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 		countMovment = 0;
 	}
 	avoidTunnels(ghostDir);
-	for (int i = 0; i <= numOfGhosts; i++) {
+	for (int i = 0; i < numOfGhosts; i++) {
 		while (!checkCollisionGhost(ghostDir[i], i)) /* Checks if the next move is not valid. */
 			ghostDir[i] = rand() % 4;
 		int xBeforeMove = ghost[i].body.getX();
@@ -308,13 +311,13 @@ int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 
 void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score) {
 	int xPlayer = player.body.getX(), yPlayer = player.body.getY();
-	for (int i = 0; i <= numOfGhosts; i++) {
+	for (int i = 0; i < numOfGhosts; i++) {
 		if ((xPlayer == ghost[i].body.getX()) && (yPlayer == ghost[i].body.getY())) {
 			/* If one of the ghosts eat pacman. */
 				--life;
 			flag = 0;
 			start = 0;
-			for (int k = 0; k <= numOfGhosts; k++) {
+			for (int k = 0; k < numOfGhosts; k++) {
 				ghost[k].body.setXandY(ghost[k].body.getfirstX(), ghost[k].body.getfirstY());
 			}
 			player.body.setXandY(player.body.getfirstX(), player.body.getfirstY());
@@ -322,7 +325,7 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 			board.PrintBoard();
 			printCreatures();
 			player.setDirection(0);
-			for (int k = 0; k <= numOfGhosts; k++) {
+			for (int k = 0; k < numOfGhosts; k++) {
 				ghost[k].setDirection(0);
 				dir = ghostDir[k] = 0;
 			}
@@ -356,8 +359,31 @@ void ThePacmanGame::avoidTunnels(int ghostDir[2]) {
 
 void ThePacmanGame::printCreatures() {
 	player.printBody((char)002);
-	for (int i = 0; i <= numOfGhosts; i++) {
+	for (int i = 0; i < numOfGhosts; i++) {
 		ghost[i].printBody((char)234);
+	}
+}
+
+void ThePacmanGame::movingThroughTunnel() {
+	if (player.body.getY() == board.topL.getY()) {
+		gotoxy(player.body.getY(), player.body.getX());
+		cout << ' ';
+		player.body.setXandY(player.body.getX(), board.botR.getY() - 1);
+	}
+	if (player.body.getY() == board.botR.getY()) {
+		gotoxy(player.body.getY(), player.body.getX());
+		cout << ' ';
+		player.body.setXandY(player.body.getX(), board.topL.getY() + 1);
+	}
+	if (player.body.getX() == board.topL.getX()) {
+		gotoxy(player.body.getY(), player.body.getX());
+		cout << ' ';
+		player.body.setXandY(board.botR.getX() - 1, player.body.getY());
+	}
+	if (player.body.getX() == board.botR.getX()) {
+		gotoxy(player.body.getY(), player.body.getX());
+		cout << ' ';
+		player.body.setXandY(board.botR.getX() + 1, player.body.getY());
 	}
 }
 
@@ -456,7 +482,7 @@ void ThePacmanGame::ghostMovementBest() {
 	Point pacman, currGhost;
 	vector<int> path;
 	int lastX, lastY;
-	for (int i = 0; i <= numOfGhosts; i++) {
+	for (int i = 0; i < numOfGhosts; i++) {
 		pacman.setXandY(player.body.getY(), player.body.getX());
 		currGhost.setXandY(ghost[i].body.getY(), ghost[i].body.getX());
 		path = shortestPath(board.mat, board.rowboard1, board.colboard1, currGhost, pacman);

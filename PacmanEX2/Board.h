@@ -8,10 +8,11 @@ class Board {
 	char* boardname;
 	char mat[25][80];
 	char boardArr[25][80];
+	Point topL, botR;
 	friend class ThePacmanGame;
 
 public:
-  void activateBoard(Pacman& p, Ghost ghost[],int &numOfGhosts);
+  void activateBoard(Pacman& p, Ghost ghost[], int& numOfGhosts);
   void PrintBoard();
   void setBoardCol(int col);
   void setBoardRow(int row);
