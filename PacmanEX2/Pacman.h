@@ -10,6 +10,7 @@ class Pacman {
 	char figure;
 	Point body;
 	friend class ThePacmanGame;
+	friend class Board;
 public:
 	void setArrowKeys(const char* keys) { // "wsadWSAD"
 		for (int i = 0; i < 10; i++)
@@ -19,7 +20,6 @@ public:
 		figure = c;
 	}
 	void move();
-	void setBody(int i, int k) { body.setXandY(i, k); };
 	int getDirection(char key);
 	void setDirection(int dir) {
 		direction = dir;

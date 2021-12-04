@@ -6,13 +6,16 @@ class Board {
 	enum { ROW = 25, COLUMN = 80 };
 	int rowboard1 = 0, colboard1 = 0;
 	char* boardname;
+	char mat[25][80];
 
 public:
-  char boardArr[25][80];
-  void activateBoard(Pacman &p);
+	char boardArr[25][80];
+  void activateBoard(Pacman& p, Ghost ghost[],int &numOfGhosts);
   void PrintBoard();
   void setBoardCol(int col);
   void setBoardRow(int row);
+  void initMat();
+  bool isValid(int row, int col) { return (row >= 0) && (col >= 0) && (row < rowboard1) && (col < colboard1); }
 	
 };
 #endif

@@ -6,16 +6,15 @@ void ThePacmanGame::init()
 	player.setFigure((char)002);
 	ghost[0].setFigure((char)234);
 	ghost[1].setFigure((char)234);
-	board.activateBoard(player);
+	ghost[2].setFigure((char)234);
+	ghost[3].setFigure((char)234);
+	board.activateBoard(player,ghost,this->numOfGhosts);
 	board.PrintBoard();
-	//player.body.setXandY(3, 1);
-	ghost[0].body.setXandY(36, 12);
-	ghost[1].body.setXandY(48, 12);
 }
 void ThePacmanGame::run()
 {
 	char key = 0;
-	int dir = UP, start = FALSE, score = 0, life = 3, lastDir, ghostDelay = FALSE, ghostDir[2] = { 0,0 }, flag = 0, countMovment = 0;
+	int dir = UP, start = FALSE, score = 0, life = 3, lastDir, ghostDelay = FALSE, ghostDir[4] = { 0,0 }, flag = 0, countMovment = 0;
 	printCreatures();
 	gotoxy(0, 24);
 	cout << "score: " << score << ' ' << "life: " << life;
@@ -154,10 +153,7 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
-		board.activateBoard(player);
-		//player.body.setXandY(3, 1);
-		ghost[0].body.setXandY(36, 12);
-		ghost[1].body.setXandY(48, 12);
+		board.activateBoard(player, ghost, this->numOfGhosts);
 		system("CLS");
 		mainMenu();
 	}
@@ -232,36 +228,27 @@ void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, in
 }
 
 void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
-	int ghost0X = ghost[0].body.getX(), ghost1X = ghost[1].body.getX(), ghost0Y = ghost[0].body.getY(), ghost1Y = ghost[1].body.getY();
-
-	getOutOfBox(ghostDir); /*Get out from the starting boxand made an option to go to the bottom of the map.*/
 
 	if (countMovment == 20) {
 		ghostDir[0] = rand() % 4;
 		ghostDir[1] = rand() % 4;
+		ghostDir[2] = rand() % 4;
+	    ghostDir[3] = rand() % 4;
 		countMovment = 0;
 	}
 
 	avoidTunnels(ghostDir);
+	for (int i = 0; i < numOfGhosts; i++) {
+		while (!checkCollisionGhost(ghostDir[i], i))  /*Checks if the next move is not valid.*/
+			ghostDir[i] = rand() % 4;
 
-	while (!checkCollisionGhost(ghostDir[0], 0))  /*Checks if the next move is not valid.*/
-		ghostDir[0] = rand() % 4;
+		ghost[i].setDirection(ghostDir[i]);
+		ghost[i].move();
 
-	ghost[0].setDirection(ghostDir[0]);
-	ghost[0].move();
-
-	if (board.boardArr[ghost0Y][ghost0X] == '*') {
-		gotoxy(ghost0X, ghost0Y);
-		cout << '*';
-	}
-	while (!checkCollisionGhost(ghostDir[1], 1)) /*Checks if the next move is not valid.*/
-		ghostDir[1] = rand() % 4;
-
-	ghost[1].setDirection(ghostDir[1]);
-	ghost[1].move();
-	if (board.boardArr[ghost1Y][ghost1X] == '*') {
-		gotoxy(ghost1X, ghost1Y);
-		cout << '*';
+		if (board.boardArr[ghost[i].body.getY()][ghost[i].body.getX()] == '*') {
+			gotoxy(ghost[i].body.getX(), ghost[i].body.getY());
+			cout << '*';
+		}
 	}
 	countMovment++;
 }
@@ -305,13 +292,9 @@ int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 }
 
 void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score) {
-	int x[2], y[2], xPlayer = player.body.getX(), yPlayer = player.body.getY();
-	x[0] = ghost[0].body.getX();
-	y[0] = ghost[0].body.getY();
-	x[1] = ghost[1].body.getX();
-	y[1] = ghost[1].body.getY();
-	for (int i = 0; i < 2; i++) {
-		if ((xPlayer == x[i]) && (yPlayer == y[i])) { /*If one of the ghosts eat pacman.*/
+	int xPlayer = player.body.getX(), yPlayer = player.body.getY();
+	for (int i = 0; i < numOfGhosts; i++) {
+		if ((xPlayer == ghost[i].body.getX()) && (yPlayer == ghost[i].body.getY())) { /*If one of the ghosts eat pacman.*/
 			--life;
 			flag = 0;
 			start = 0;
@@ -321,12 +304,13 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 			printCreatures();
 			ghost[0].setDirection(0);
 			ghost[1].setDirection(0);
+			ghost[2].setDirection(0);
+			ghost[3].setDirection(0);
 			player.setDirection(0);
-			gotoxy(x[0], y[0]);
-			cout << board.boardArr[y[0]][x[0]];
-			gotoxy(x[1], y[1]);
-			cout << board.boardArr[y[1]][x[1]];
-			dir = ghostDir[0] = ghostDir[1] = 0;
+			for(int k = 0; k < numOfGhosts; k++)
+			//gotoxy(ghost[k].body.getX(), ghost[k].body.getY());
+			//cout << board.boardArr[ghost[k].body.getY()][ghost[k].body.getX()];
+			dir = ghostDir[k]  = 0;
 			break; /*avoid from being eaten twice (if the ghosts are on the same spot)*/
 		}
 	}
@@ -334,18 +318,6 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 	cout << "score: " << score << ' ' << "life: " << life;
 }
 
-void ThePacmanGame::getOutOfBox(int ghostDir[2]) {
-	int ghost0X = ghost[0].body.getX(), ghost1X = ghost[1].body.getX(), ghost0Y = ghost[0].body.getY(), ghost1Y = ghost[1].body.getY();
-
-	if (((ghost1X == 39) && (ghost1Y == 12)) || ((ghost1X == 39) && (ghost1Y == 10))) /*To get the ghosts out of the starting pos */
-		ghostDir[1] = UP;
-	if (((ghost0X == 39) && (ghost0Y == 12)) || ((ghost0X == 39) && (ghost0Y == 10))) /*To get the ghosts out of the starting pos */
-		ghostDir[0] = UP;
-	if (((ghost1X == 24) && (ghost1Y == 8)) || ((ghost1X == 54) && (ghost1Y == 8))) /*To make the ghost an option go to the bottom of the map*/
-		ghostDir[1] = rand() % 4;
-	if (((ghost0X == 24) && (ghost0Y == 8)) || ((ghost0X == 54) && (ghost0Y == 8))) /*To make the ghost an option go to the bottom of the map*/
-		ghostDir[0] = rand() % 4;
-}
 
 void ThePacmanGame::avoidTunnels(int ghostDir[2]) {
 	int ghost0X = ghost[0].body.getX(), ghost1X = ghost[1].body.getX(), ghost0Y = ghost[0].body.getY(), ghost1Y = ghost[1].body.getY();
@@ -368,30 +340,105 @@ void ThePacmanGame::avoidTunnels(int ghostDir[2]) {
 		ghostDir[0] = LEFT;
 }
 
-void ThePacmanGame::findPath(int a, int b, int ghostNum, int mainDir, int secDir, int thirdDir, int lastDir) {
-	if (!checkCollisionGhost(mainDir, ghostNum)) {
-		if (a < b && ghost[ghostNum].direction != lastDir) {
-			if (!checkCollisionGhost(secDir, ghostNum)) {
-				if (!checkCollisionGhost(thirdDir, ghostNum)) {
-					ghost[ghostNum].setDirection(lastDir);
+void ThePacmanGame::printCreatures() {
+	player.printBody((char)002);
+	for (int i = 0; i < numOfGhosts; i++) {
+		ghost[i].printBody((char)234);
+	}
+
+
+}
+vector<int> shortestPath(char mat[][COLUMN], Point src, Point dest)
+{
+	//stores the moves of the directions of cells
+	int dRow[4] = { -1, 0, 0, 1 };
+	int dCol[4] = { 0, -1, 1, 0 };
+
+	int distance[ROW][COLUMN]; //the distance of each cell from the source cell
+	memset(distance, -1, sizeof distance);
+	distance[src.getX()][src.getY()] = 0; //distance of source cell is 0
+
+	bool visited[ROW][COLUMN]; //make a bool visited array
+	memset(visited, false, sizeof visited);
+
+	visited[src.getX()][src.getY()] = true; //mark source cell as visited
+
+	// Create a queue for BFS
+	queue<Node> q;
+
+	Node s = { src, 0 }; //distance of source cell is 0
+
+	// Enqueue source cell
+	q.push(s);
+
+	bool ok = false; //if the destination is not reached
+
+	while (!q.empty()) {
+		Node curr = q.front();
+		Point pt = curr.pt;
+
+		//if we reached the destination, find the path
+		if (pt.getX() == dest.getX() && pt.getY() == dest.getY()) {
+			int xx = pt.getX(), yy = pt.getY();
+			int dist = curr.dist;
+
+			//assign the distance of destination to the distance matrix
+			distance[pt.getX()][pt.getY()] = dist;
+			vector<int> pathmoves; //stores the smallest path
+
+			while (xx != src.getX() || yy != src.getY()) { //continue until source is reached
+				//DOWN
+				if (xx > 0 && distance[xx - 1][yy] == dist - 1) {
+					pathmoves.push_back(DOWN);
+					xx--;
 				}
-				else ghost[ghostNum].setDirection(thirdDir);
+				//UP
+				if (xx < ROW - 1 && distance[xx + 1][yy] == dist - 1) {
+					pathmoves.push_back(UP);
+					xx++;
+				}
+				//RIGHT
+				if (yy > 0 && distance[xx][yy - 1] == dist - 1) {
+					pathmoves.push_back(RIGHT);
+					yy--;
+				}
+				//LEFT
+				if (yy < COLUMN - 1 && distance[xx][yy + 1] == dist - 1) {
+					pathmoves.push_back(LEFT);
+					yy++;
+				}
+				dist--;
 			}
-			else ghost[ghostNum].setDirection(secDir);
+
+			//reverse the backtracked path
+			reverse(pathmoves.begin(), pathmoves.end());
+			ok = true;
+			return pathmoves;
 		}
-		else {
-			if (!checkCollisionGhost(thirdDir, ghostNum)) {
-				if (!checkCollisionGhost(lastDir, ghostNum)) {
-					ghost[ghostNum].setDirection(secDir);
-				}
-				else ghost[ghostNum].setDirection(lastDir);
+
+		q.pop(); //pop the start of queue
+
+		for (int i = 0; i < 4; i++) { //explore all directions
+			int row = pt.getX() + dRow[i];
+			int col = pt.getY() + dCol[i];
+
+			//if the curr cell is valid, "visit" the cell
+			if (isValid(row, col) && (mat[row][col] == '1' || mat[row][col] == 's'
+				|| mat[row][col] == 'd') && !visited[row][col]) {
+				visited[row][col] = true; //mark the curr cell as visited
+				Point po; //enque the cell
+				po.setXandY(row, col);
+				Node adjCell = { po, curr.dist + 1 };
+				q.push(adjCell);
+				distance[row][col] = curr.dist + 1; //update the distance
 			}
-			else ghost[ghostNum].setDirection(thirdDir);
 		}
 	}
-	else ghost[ghostNum].setDirection(mainDir);
+
+	if (!ok) //if the destination is not reachable
+		return (vector<int>)0;
 }
-
-
+message.txt
+4 KB
 
 

@@ -7,6 +7,7 @@ class Ghost {
 	int countmovment = 20;
 	Point body;
 	friend class ThePacmanGame;
+	friend class Board;
 public:
 	void setFigure(const char c) {
 		figure = c;
