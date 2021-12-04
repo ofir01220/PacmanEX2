@@ -7,9 +7,9 @@ class Board {
 	int rowboard1 = 0, colboard1 = 0;
 	char* boardname;
 	char mat[25][80];
-
-public:
 	char boardArr[25][80];
+	friend class ThePacmanGame;
+public:
   void activateBoard(Pacman& p, Ghost ghost[],int &numOfGhosts);
   void PrintBoard();
   void setBoardCol(int col);
