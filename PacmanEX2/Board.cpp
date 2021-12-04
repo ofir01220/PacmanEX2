@@ -57,7 +57,7 @@ void Board::setBoardRow(int row) {
 void Board::activateBoard(Pacman &p) {
 	int i = 0, k = 0;
 	ifstream myReadFile;
-	myReadFile.open("beforchange.txt");
+	myReadFile.open("boardtest.txt");
 	char niceChar;
 	while (!myReadFile.eof()) {
 		  niceChar = myReadFile.get();

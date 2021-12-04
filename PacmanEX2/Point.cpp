@@ -19,12 +19,12 @@ void Point::movePacman(int dir) {
 			y = 0;
 		break;
 	case 2: // LEFT
-		x = x - 3;
+		x = x - 1;
 		if (x < 1)
 			x = 78;
 		break;
 	case 3: // RIGHT
-		x = x + 3;
+		x = x + 1;
 		if (x > 77)
 			x = 0;
 		break;
@@ -41,10 +41,10 @@ void Point::moveGhost(int direction) {
 		y = y + 1;
 		break;
 	case 2: // LEFT
-		x = x - 3;
+		x = x - 1;
 		break;
 	case 3: // RIGHT
-		x = x + 3;
+		x = x + 1;
 		break;
 
 	}

@@ -59,37 +59,28 @@ int ThePacmanGame::checkCollisionPacman(int dir) /*check if the next move is val
 {
 	switch (dir) {
 	case 0: // UP
-		if ((board.boardArr[player.body.getY() - 1][player.body.getX()] == '+') ||
-			(board.boardArr[player.body.getY() - 1][player.body.getX()] == '-') ||
-			(board.boardArr[player.body.getY() - 1][player.body.getX()] == char(178)))
+		if (board.boardArr[player.body.getY() - 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 1: // DOWN
-		if ((board.boardArr[player.body.getY() + 1][player.body.getX()] == '+') ||
-			(board.boardArr[player.body.getY() + 1][player.body.getX()] == '-') ||
-			(board.boardArr[player.body.getY() + 1][player.body.getX()] == '_') ||
-			(board.boardArr[player.body.getY() + 1][player.body.getX()] == char(178)))
+		if (board.boardArr[player.body.getY() + 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 2: // LEFT
-		if ((board.boardArr[player.body.getY()][player.body.getX() - 3] == '+') ||
-			(board.boardArr[player.body.getY()][player.body.getX() - 3] == '-') ||
-			(board.boardArr[player.body.getY()][player.body.getX() - 3] == char(178)))
+		if  (board.boardArr[player.body.getY()][player.body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 3: // (3)- RIGHT
-		if ((board.boardArr[player.body.getY()][player.body.getX() + 3] == '+') ||
-			(board.boardArr[player.body.getY()][player.body.getX() + 3] == '-') ||
-			(board.boardArr[player.body.getY()][player.body.getX() + 3] == char(178)))
+		if (board.boardArr[player.body.getY()][player.body.getX() + 1] == char(178))
 			return 0;
 		else
 			return 1;
@@ -274,67 +265,33 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	}
 	countMovment++;
 }
-void ThePacmanGame::ghostMovementBest(int* ghostDir, int& countMovment) {
-	double a, b, c, d;
-	for (int i = 0; i < 2; i++) {
-		a = sqrt(pow(ghost[i].body.getY() - 1 - player.body.getY(), 2) + pow(ghost[i].body.getX() - player.body.getX(), 2)); //UP
-		b = sqrt(pow(ghost[i].body.getY() + 1 - player.body.getY(), 2) + pow(ghost[i].body.getX() - player.body.getX(), 2)); //DOWN
-		c = sqrt(pow((ghost[i].body.getX() - 3 - player.body.getX()/3), 2) + pow(ghost[i].body.getY() - player.body.getY(), 2)); //LEFT
-		d = sqrt(pow((ghost[i].body.getX() + 3 - player.body.getX()/3), 2) + pow(ghost[i].body.getY() - player.body.getY(), 2)); //RIGHT
-		if (a < b && a <= c && a <= d && ghost[i].direction != DOWN) 
-			findPath(c, d, i, UP, LEFT, RIGHT, DOWN);
-			
-		else if (b < c && b <= d && ghost[i].direction != UP)  
-			findPath(c, d, i, DOWN, LEFT, RIGHT, UP);
 
-		else if (c < d && ghost[i].direction != RIGHT)  
-			findPath(a, b, i, LEFT, UP, DOWN, RIGHT);
-
-		else if (ghost[i].direction != LEFT) 
-			findPath(a, b, i, RIGHT, UP, DOWN, LEFT);
-		avoidTunnels(ghostDir);
-		ghost[i].move();
-		if (board.boardArr[ghost[i].body.getY()][ghost[i].body.getX()] == '.') {
-			gotoxy(ghost[i].body.getX(), ghost[i].body.getY());
-			cout << '.';
-		}
-	}
-}
 
 int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 	switch (dir) {
 	case 0: // UP
-		if ((board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == '+') ||
-			(board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == '-') ||
-			(board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == char(178)))
+		if (board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 1: // DOWN
-		if ((board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == '+') ||
-			(board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == '-') ||
-			(board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == '_') ||
-			(board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == char(178)))
+		if (board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 2: // LEFT
-		if ((board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 3] == '+') ||
-			(board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 3] == '-') ||
-			(board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 3] == char(178)))
+		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
 	case 3: // (3)- RIGHT
-		if ((board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 3] == '+') ||
-			(board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 3] == '-') ||
-			(board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 3] == char(178)))
+		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 1] == char(178))
 			return 0;
 		else
 			return 1;
