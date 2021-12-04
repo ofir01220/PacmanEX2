@@ -238,15 +238,17 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	}
 
 	avoidTunnels(ghostDir);
-	for (int i = 0; i < numOfGhosts; i++) {
+	for (int i = 0; i <= numOfGhosts; i++) {
 		while (!checkCollisionGhost(ghostDir[i], i))  /*Checks if the next move is not valid.*/
 			ghostDir[i] = rand() % 4;
-
+		int xBeforeMove = ghost[i].body.getX();
+		int yBeforeMove = ghost[i].body.getY();
 		ghost[i].setDirection(ghostDir[i]);
 		ghost[i].move();
 
-		if (board.boardArr[ghost[i].body.getY()][ghost[i].body.getX()] == '*') {
-			gotoxy(ghost[i].body.getX(), ghost[i].body.getY());
+
+		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
+			gotoxy(xBeforeMove, yBeforeMove);
 			cout << '*';
 		}
 	}
@@ -298,9 +300,12 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 			--life;
 			flag = 0;
 			start = 0;
-			ghost[0].body.setXandY(36, 12);
-			ghost[1].body.setXandY(42, 12);
-			player.body.setXandY(3, 1);
+			for (int k = 0; k <= numOfGhosts; k++) {
+				ghost[k].body.setXandY(ghost[k].body.getfirstX(), ghost[k].body.getfirstY());
+			}
+			player.body.setXandY(player.body.getfirstX(), player.body.getfirstY());
+			system("CLS");
+			board.PrintBoard();
 			printCreatures();
 			ghost[0].setDirection(0);
 			ghost[1].setDirection(0);
@@ -342,103 +347,9 @@ void ThePacmanGame::avoidTunnels(int ghostDir[2]) {
 
 void ThePacmanGame::printCreatures() {
 	player.printBody((char)002);
-	for (int i = 0; i < numOfGhosts; i++) {
+	for (int i = 0; i <= numOfGhosts; i++) {
 		ghost[i].printBody((char)234);
 	}
 
 
 }
-vector<int> shortestPath(char mat[][COLUMN], Point src, Point dest)
-{
-	//stores the moves of the directions of cells
-	int dRow[4] = { -1, 0, 0, 1 };
-	int dCol[4] = { 0, -1, 1, 0 };
-
-	int distance[ROW][COLUMN]; //the distance of each cell from the source cell
-	memset(distance, -1, sizeof distance);
-	distance[src.getX()][src.getY()] = 0; //distance of source cell is 0
-
-	bool visited[ROW][COLUMN]; //make a bool visited array
-	memset(visited, false, sizeof visited);
-
-	visited[src.getX()][src.getY()] = true; //mark source cell as visited
-
-	// Create a queue for BFS
-	queue<Node> q;
-
-	Node s = { src, 0 }; //distance of source cell is 0
-
-	// Enqueue source cell
-	q.push(s);
-
-	bool ok = false; //if the destination is not reached
-
-	while (!q.empty()) {
-		Node curr = q.front();
-		Point pt = curr.pt;
-
-		//if we reached the destination, find the path
-		if (pt.getX() == dest.getX() && pt.getY() == dest.getY()) {
-			int xx = pt.getX(), yy = pt.getY();
-			int dist = curr.dist;
-
-			//assign the distance of destination to the distance matrix
-			distance[pt.getX()][pt.getY()] = dist;
-			vector<int> pathmoves; //stores the smallest path
-
-			while (xx != src.getX() || yy != src.getY()) { //continue until source is reached
-				//DOWN
-				if (xx > 0 && distance[xx - 1][yy] == dist - 1) {
-					pathmoves.push_back(DOWN);
-					xx--;
-				}
-				//UP
-				if (xx < ROW - 1 && distance[xx + 1][yy] == dist - 1) {
-					pathmoves.push_back(UP);
-					xx++;
-				}
-				//RIGHT
-				if (yy > 0 && distance[xx][yy - 1] == dist - 1) {
-					pathmoves.push_back(RIGHT);
-					yy--;
-				}
-				//LEFT
-				if (yy < COLUMN - 1 && distance[xx][yy + 1] == dist - 1) {
-					pathmoves.push_back(LEFT);
-					yy++;
-				}
-				dist--;
-			}
-
-			//reverse the backtracked path
-			reverse(pathmoves.begin(), pathmoves.end());
-			ok = true;
-			return pathmoves;
-		}
-
-		q.pop(); //pop the start of queue
-
-		for (int i = 0; i < 4; i++) { //explore all directions
-			int row = pt.getX() + dRow[i];
-			int col = pt.getY() + dCol[i];
-
-			//if the curr cell is valid, "visit" the cell
-			if (isValid(row, col) && (mat[row][col] == '1' || mat[row][col] == 's'
-				|| mat[row][col] == 'd') && !visited[row][col]) {
-				visited[row][col] = true; //mark the curr cell as visited
-				Point po; //enque the cell
-				po.setXandY(row, col);
-				Node adjCell = { po, curr.dist + 1 };
-				q.push(adjCell);
-				distance[row][col] = curr.dist + 1; //update the distance
-			}
-		}
-	}
-
-	if (!ok) //if the destination is not reachable
-		return (vector<int>)0;
-}
-message.txt
-4 KB
-
-
