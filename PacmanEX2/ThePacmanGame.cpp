@@ -255,16 +255,17 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	}
 	avoidTunnels(ghostDir);
 	for (int i = 0; i <= numOfGhosts; i++) {
-		while (!checkCollisionGhost(ghostDir[i], i)) /* Checks if the next move is not valid. */
+		while (!checkCollisionGhost(ghostDir[i], i))  /*Checks if the next move is not valid.*/
 			ghostDir[i] = rand() % 4;
 		int xBeforeMove = ghost[i].body.getX();
 		int yBeforeMove = ghost[i].body.getY();
 		ghost[i].setDirection(ghostDir[i]);
 		ghost[i].move();
 
-		if (board.boardArr[yBeforeMove][xBeforeMove] == ' ') {
+
+		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
 			gotoxy(xBeforeMove, yBeforeMove);
-			cout << ' ';
+			cout << '*';
 		}
 	}
 }
