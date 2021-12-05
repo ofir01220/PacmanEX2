@@ -11,19 +11,21 @@ class ThePacmanGame {
     enum { ESC = 27, UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3 };
     Pacman player;
     int numOfBoards;
+    int boardNum = 1;
+    int sleepTime = 200;
     int numOfGhosts;
     Ghost ghost[4];
     Board board;
 public:
     void init();
     void run();
+    void chooseLevel();
     int checkCollisionPacman(int dir);
     int checkCollisionGhost(int dir, int ghostNum);
     void mainMenu();
     void instructions();
-    void chooseLevel();
     void pause(int& score, int& dir, int& life, int& lastDir, int& flag);
-    int endGameConditions(const int score, const int life);
+    int endGameConditions(const int score, const int life,int &flag);
     void setNumOfBoards(int num) { numOfBoards = num; };
     void winGame();
     void lostGame();
@@ -32,6 +34,7 @@ public:
     void printCreatures();
     void movingThroughTunnel();
     void ghostMovementNovice(int* ghostDir, int& countMovment);
+    void ghostMovementGood(int* ghostDir, int& countMovment);
     void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score);
     void avoidTunnels(int ghostDir[2]); /* to not let the ghosts enter the tunnels */
         void ghostMovementBest();
@@ -41,6 +44,8 @@ public:
         int dist;
         Node(Point _pt, int _dist) { pt = _pt; dist = _dist; }
     };
-
+    void selectedMovmentDiff(int* ghostDir, int& countSteps);
+    void settings();
+    void selectGameSpeed();
 };
 #endif

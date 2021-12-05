@@ -54,11 +54,14 @@ void Board::setBoardRow(int row) {
 	this->rowboard1 = row;
 
 }
-void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts) {
+void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
 	breadCrumbs = numOfGhosts = 0;
 	int i = 0, k = 0, flag = 1, secFlag = 1;
 	ifstream myReadFile;
-	myReadFile.open("board_02.txt");
+	if (boardNum == 1)
+	myReadFile.open("board_01.txt");
+	else if (boardNum == 2)
+		myReadFile.open("board_02.txt");
 	char niceChar = ' ', lastChar = ' ';
 	while (!myReadFile.eof()) {
 		if(lastChar != '&' || niceChar != '\n')
@@ -104,10 +107,12 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts) {
 			numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}
-		else if (niceChar == '&')
-			for(int n = i; n < i + 3; n++)
-				for(int m = k; m < k + 20; m++)
+		else if (niceChar == '&') {
+			setPrintXandY(k, i);
+			for (int n = i; n < i + 3; n++)
+				for (int m = k; m < k + 20; m++)
 					boardArr[n][m] = ' ';
+		}
 		k++;
 	}
 	setBoardRow(i + 1);
