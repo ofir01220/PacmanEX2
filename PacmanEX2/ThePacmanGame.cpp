@@ -103,7 +103,8 @@ int ThePacmanGame::checkCollisionPacman(int dir) /*check if the next move is val
 
 void ThePacmanGame::mainMenu() {
 	char choice = '0';
-
+	boardNum = 1;
+	board.boardname = "";
 	while (choice == '0') {
 		cout << "****************" << endl;
 		cout << "*****PACMAN*****" << endl;
@@ -201,9 +202,9 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
-		board.activateBoard(player, ghost, this->numOfGhosts,boardNum);
 		system("CLS");
 		mainMenu();
+		init();
 	}
 	if (trash == 'r' || trash == 'R') {/*RESTART*/
 		ifPause = 0;

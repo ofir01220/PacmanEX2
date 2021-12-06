@@ -6,7 +6,7 @@ class Board {
 	enum { ROW = 25, COLUMN = 80, BEGINNER = 0, INTERMIDATE = 1, EXPERT = 2 };
 	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
 	int difficult = BEGINNER;
-	char* boardname;
+	string boardname = "";
 	char mat[25][80];
 	char boardArr[25][80];
 	int printx = 0, printy = 0;

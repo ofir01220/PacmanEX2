@@ -37,10 +37,12 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 	else if (boardNum == 2)
 		myReadFile.open("board_02.txt");
 	else if(boardNum == 3){}
-	else if (boardNum == 5) {
-		cout << "Enter a file's name (then press ENTER): ";
-		cin >> userFile;
-		myReadFile.open(userFile);
+	else if (boardNum == 5 ) {
+		if (boardname == "") {
+			cout << "Enter a file's name (then press ENTER): ";
+			cin >> boardname;
+		}
+		myReadFile.open(boardname);
 		system("CLS");
 	}
 
@@ -108,3 +110,8 @@ void Board::initMat() {
 				mat[i][j] = '1';
 		}
 }
+
+
+
+
+
