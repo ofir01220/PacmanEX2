@@ -13,6 +13,8 @@ class ThePacmanGame {
     int numOfBoards;
     int boardNum = 1;
     int sleepTime = 200;
+    int ifPause = 0;
+    int score = 0;
     int numOfGhosts;
     Ghost ghost[4];
     Board board;
@@ -24,18 +26,18 @@ public:
     int checkCollisionGhost(int dir, int ghostNum);
     void mainMenu();
     void instructions();
-    void pause(int& score, int& dir, int& life, int& lastDir, int& flag);
-    int endGameConditions(const int score, const int life,int &flag);
+    void pause(int& dir, int& life, int& lastDir, int& flag);
+    int endGameConditions(const int life,int &flag);
     void setNumOfBoards(int num) { numOfBoards = num; };
     void winGame();
     void lostGame();
-    void yummy(int& score, int life); /* check if the pacman ate a bread crumb */
-    void checkValidKey(int key, int& dir, int& lastDir, int& life, int& score, int& flag); /* checks if the player input is valid */
+    void yummy(int life); /* check if the pacman ate a bread crumb */
+    void checkValidKey(int key, int& dir, int& lastDir, int& life, int& flag); /* checks if the player input is valid */
     void printCreatures();
     void movingThroughTunnel();
     void ghostMovementNovice(int* ghostDir, int& countMovment);
     void ghostMovementGood(int* ghostDir, int& countMovment);
-    void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score);
+    void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir);
     void avoidTunnels(int ghostDir[2]); /* to not let the ghosts enter the tunnels */
         void ghostMovementBest();
     vector<int> shortestPath(char mat[][80], int rRow, int rCol, Point src, Point dest);

@@ -10,58 +10,40 @@ void Board::PrintBoard() { //print the game screan.
 	}
 }
 
-/*void Board::activateBoard()
-{
-	char board2[ROW][COLUMN] = {
-
-		"+--------------------------------+     +--------------------------------------+",
-		"|     .  .  .  .  .  .  .  .  .  .  .  |  .  .  .  .  .  .  .  .  .  .  .  .  |",
-		"|  .  +--------------+  .  +-----+  .  |  .  +-----+  .  +--------------+  .  |",
-		"|  .  ||||||||||||||||  .  |||||||  .  |  .  |||||||  .  ||||||||||||||||  .  |",
-		"|  .  ||||||||||||||||  .  |||||||  .  |  .  |||||||  .  ||||||||||||||||  .  |",
-		"|  .  +--------------+  .  +-----+  .  |  .  +-----+  .  +--------------+  .  |",
-		"|  .  .  .  .  .  .  .  .  .  .  .  .  |  .  .  .  .  .  .  .  .  .  .  .  .  |",
-		"|  .  +--------------+  .  +-----------+-----------+  .  +--------------+  .  |",
-		"|  .  .  .  .  .  .  .  .  .  .  .  .     .  .  .  .  .  .  .  .  .  .  .  .  |",
-		"+--------------------+  .  +--------+     +--------+  .  +--------------------+",
-		"||||||||||||||||||||||  .  |                       |  .  ||||||||||||||||||||||",
-		"+--------------------+  .  |     +--+_____+--+     |  .  +--------------------+",
-		"                        .  |     |           |     |  .                        ",
-		"+--------------------+  .  |     +-----------+     |  .  +--------------------+",
-		"||||||||||||||||||||||  .  |                       |  .  ||||||||||||||||||||||",
-		"+--------------------+  .  +-----------------------+  .  +--------------------+",
-		"|  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |",
-		"|  .  +--------------+  .  +-----------------------+  .  +--------------+  .  |",
-		"|  .  .  .  .  .  .  |  .  .  .  .  .  .  .  .  .  .  .  |  .  .  .  .  .  .  |",
-		"+--------------+  .  +  .  +  .  +-----------+  .  +  .  +  .  +--------------+",
-		"|  .  .  .  .  .  .  .  .  |  .  .  .  |  .  .  .  |  .  .  .  .  .  .  .  .  |",
-		"|  .  +--------------------+-----+  .  +  .  +-----+  .  +---------------+ .  |",
-		"|  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |",
-		"+--------------------------------+     +--------------------------------------+"
-	};
-
-	for (int i = 0; i < COLUMN; i++) {
-		for (int k = 0; k < ROW; k++)
-			this->boardArr[k][i] = board2[k][i];
-	}
-}*/
+void Board::clearBoard() {
+	for (int i = 0; i < ROW; i++) 
+		for (int k = 0; k < COLUMN; k++) {
+			boardArr[i][k] = '\0';
+			mat[i][k] = '\0';
+		}
+}
 
 void Board::setBoardCol(int col) {
 	this->colboard1 = col;
-
 }
+
 void Board::setBoardRow(int row) {
 	this->rowboard1 = row;
-
 }
+
 void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
 	breadCrumbs = numOfGhosts = 0;
+	clearBoard();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
+	string userFile = "";
 	ifstream myReadFile;
 	if (boardNum == 1)
-	myReadFile.open("board_01.txt");
+		myReadFile.open("board_01.txt");
 	else if (boardNum == 2)
 		myReadFile.open("board_02.txt");
+	else if(boardNum == 3){}
+	else if (boardNum == 5) {
+		cout << "Enter a file's name (then press ENTER): ";
+		cin >> userFile;
+		myReadFile.open(userFile);
+		system("CLS");
+	}
+
 	char niceChar = ' ', lastChar = ' ';
 	while (!myReadFile.eof()) {
 		if(lastChar != '&' || niceChar != '\n')
@@ -107,17 +89,15 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 			numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}
-		else if (niceChar == '&') {
+		else if (niceChar == '&') 
 			setPrintXandY(k, i);
-			for (int n = i; n < i + 3; n++)
-				for (int m = k; m < k + 20; m++)
-					boardArr[n][m] = ' ';
-		}
+
 		k++;
 	}
 	setBoardRow(i + 1);
 	myReadFile.close();
 }
+
 void Board::initMat() {
 	/*initilize hidden array of binnary numbers('1' - valid pos, '0' - not valid pos)*/
 	for (int i = 0; i <  rowboard1; i++)

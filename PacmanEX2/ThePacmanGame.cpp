@@ -8,22 +8,25 @@ void ThePacmanGame::init()
 	for(int i = 0; i < numOfGhosts; i++)
 		ghost[i].setFigure((char)234);
 	board.PrintBoard();
+	printCreatures();
 	board.initMat();
 }
-void ThePacmanGame::run()
+void ThePacmanGame::run() 
 {
 	char key = 0;
-	int dir = UP, start = FALSE, score = 0, life = 3, lastDir, ghostDelay = FALSE, ghostDir[4] = { 0,0 }, flag = 0, countMovment = 0;
+	int dir = UP, start = FALSE, life = 3, lastDir, ghostDelay = FALSE, ghostDir[4] = { 0,0 }, flag = 0, countMovment = 0;
 	printCreatures();
 	gotoxy(board.printx, board.printy);
-	cout << "score: " << score << ' ' << "life: " << life << ' ' << "Difficult:" ;
-
+	cout << "score: " << score << ' ' << "life: " << life;
+	gotoxy(board.printx, board.printy + 1);
+	cout << "Difficult Level: " << board.difficult + 1;
 	do {
 		lastDir = dir; /*if the player selects a direction that will hit a wall, we avoid that direction and continue on the last direction (see lines 29-31)*/
 		if (_kbhit())
 		{
+			ifPause = 1;
 			key = _getch();
-			checkValidKey(key, dir, lastDir, life, score, flag); /*check if the pressed key is a valid key(move or pause)*/
+			checkValidKey(key, dir, lastDir, life, flag); /*check if the pressed key is a valid key(move or pause)*/
 		}
 		start = checkCollisionPacman(dir);
 		if (!start) {
@@ -31,16 +34,16 @@ void ThePacmanGame::run()
 			start = checkCollisionPacman(dir);
 		}
 		player.setDirection(dir);
-		if (start) {
+		if (start && ifPause) {
 			player.move();
 			movingThroughTunnel();
-			yummy(score, life); /*checks if the pacman ate a crumb.*/
+			yummy(life); /*checks if the pacman ate a crumb.*/
 			flag = 1;
 		}
 		if (flag == 1) /*starts the sleep function only if the game starts*/
 			Sleep(sleepTime);
 
-		GhostEatPacman(life, flag, start, dir, ghostDir, score);
+		GhostEatPacman(life, flag, start, dir, ghostDir);
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
 			
 			selectedMovmentDiff(ghostDir, countMovment);
@@ -49,8 +52,8 @@ void ThePacmanGame::run()
 		}
 		else
 			ghostDelay = TRUE;
-		GhostEatPacman(life, flag, start, dir, ghostDir, score);
-	} while (endGameConditions(score, life, flag));
+		GhostEatPacman(life, flag, start, dir, ghostDir);
+	} while (endGameConditions(life, flag));
 
 	system("CLS");
 }
@@ -112,10 +115,9 @@ void ThePacmanGame::mainMenu() {
 		choice = _getch();
 		if (choice != '1' && choice != '8' && choice != '9' && choice != '3')
 			choice = '0';
-		if (choice == '3') {
+		if (choice == '3') 
 			settings();
 		
-		}
 		if (choice == '8') { /*INSTRUCTIONS*/
 			instructions();
 			while (!_kbhit())
@@ -181,7 +183,7 @@ void ThePacmanGame::chooseLevel() {
 	}
 }
 
-void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& flag) {
+void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 	system("CLS");
 	cout << "******************" << endl;
 	cout << "******PAUSE*******" << endl;
@@ -194,15 +196,17 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 	}
 	char trash = _getch();
 	if (trash == 'M' || trash == 'm') { /*if the player choose m for menu that the game or will restart or will exit so we init the game*/
+		ifPause = 0;
 		score = 0;
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
-		board.activateBoard(player, ghost, this->numOfGhosts,flag);
+		board.activateBoard(player, ghost, this->numOfGhosts,boardNum);
 		system("CLS");
 		mainMenu();
 	}
 	if (trash == 'r' || trash == 'R') {/*RESTART*/
+		ifPause = 0;
 		score = 0;
 		life = 3;
 		dir = lastDir = 0;
@@ -216,25 +220,36 @@ void ThePacmanGame::pause(int& score, int& dir, int& life, int& lastDir, int& fl
 		printCreatures();
 	}
 	gotoxy(board.printx, board.printy);
-	cout << "score: " << score << ' ' << "life: " << life << ' ' << "Difficult:";
+	cout << "score: " << score << ' ' << "life: " << life;
+	gotoxy(board.printx, board.printy + 1);
+	cout << "Difficult Level: " << board.difficult + 1;
 }
 
-int ThePacmanGame::endGameConditions(const int score, const int life, int &flag) {
-	if (score == board.breadCrumbs && (boardNum == 3 || boardNum == 4)) { /*max point.*/
+int ThePacmanGame::endGameConditions(const int life, int &flag) {
+	if (score == board.breadCrumbs && (boardNum == 4 || boardNum == 6)) { /*max point.*/
 		winGame();
 		return 0;
+		init();
+		score = 0;
+		flag = 0;
+		boardNum = 1;
 	}
 	else if (score == board.breadCrumbs) {
-		boardNum = boardNum + 1;
-		board.difficult = board.difficult + 1;
+		boardNum++;
+		if(board.difficult != 2)
+			board.difficult = board.difficult + 1;
 		system("CLS");
-		board.activateBoard(player, ghost, this->numOfGhosts, boardNum);
-		board.PrintBoard();
-		printCreatures();
+		//board.activateBoard(player, ghost, this->numOfGhosts, boardNum);
+		//board.PrintBoard();
+		//printCreatures();
+		init();
+		score = 0;
 		flag = 0;
 	}
 	else if (life == 0) {
 		lostGame();
+		boardNum = 1;
+		score = 0;
 		return 0;
 	}
 	return 1; /*continue the game.*/
@@ -266,19 +281,20 @@ void ThePacmanGame::lostGame() {
 	system("CLS");
 }
 
-void ThePacmanGame::yummy(int& score, int life) {
+void ThePacmanGame::yummy(int life) {
 	if (board.boardArr[player.body.getY()][player.body.getX()] == '*') { /*if the user ate crumb.*/
 		board.boardArr[player.body.getY()][player.body.getX()] = ' '; /*we delete the crumb from the board*/
 		score++;
 		gotoxy(board.printx, board.printy);
-		cout << "score: " << score << ' ' << "life: " << life << ' ' << "Difficult:";
-
+		cout << "score: " << score << ' ' << "life: " << life;
+		gotoxy(board.printx, board.printy + 1);
+		cout << "Difficult Level: " << board.difficult + 1;
 	}
 }
 
-void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, int& score, int& flag) {
+void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, int& flag) {
 	if (key == ESC)
-		pause(score, dir, life, lastDir, flag);
+		pause(dir, life, lastDir, flag);
 
 
 	if ((player.getDirection(key)) != -1)
@@ -287,7 +303,7 @@ void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, in
 
 void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 
-	if (countMovment == 20) {
+	if (countMovment == 21) {
 		ghostDir[0] = rand() % 4;
 		ghostDir[1] = rand() % 4;
 		ghostDir[2] = rand() % 4;
@@ -347,7 +363,7 @@ int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 
 }
 
-void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir, const int score) {
+void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir) {
 	int xPlayer = player.body.getX(), yPlayer = player.body.getY();
 	for (int i = 0; i < numOfGhosts; i++) {
 		if ((xPlayer == ghost[i].body.getX()) && (yPlayer == ghost[i].body.getY())) {
@@ -368,7 +384,9 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 				dir = ghostDir[k] = 0;
 			}
 			gotoxy(board.printx, board.printy);
-			cout << "score: " << score << ' ' << "life: " << life << ' ' << "Difficult:";
+			cout << "score: " << score << ' ' << "life: " << life;
+			gotoxy(board.printx, board.printy + 1);
+			cout << "Difficult Level: " << board.difficult + 1;
 			break; /* avoid from being eaten twice(if the ghosts are on the same spot) */
 		}
 	}
@@ -407,23 +425,41 @@ void ThePacmanGame::movingThroughTunnel() {
 	if (player.body.getY() == board.topL.getY()) {
 		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
+		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
+			score++;
+			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
+		}
 		player.body.setXandY(player.body.getX(), board.botR.getY() - 1);
 	}
 	if (player.body.getY() == board.botR.getY()) {
 		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
+		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
+			score++;
+			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
+		}
 		player.body.setXandY(player.body.getX(), board.topL.getY() + 1);
 	}
 	if (player.body.getX() == board.topL.getX()) {
 		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
+		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
+			score++;
+			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
+		}
 		player.body.setXandY(board.botR.getX() - 1, player.body.getY());
 	}
 	if (player.body.getX() == board.botR.getX()) {
 		gotoxy(player.body.getX(), player.body.getY());
 		cout << ' ';
-		player.body.setXandY(board.botR.getX() + 1, player.body.getY());
+		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
+			score++;
+			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
+		}
+		player.body.setXandY(board.topL.getX() + 1, player.body.getY());
 	}
+	gotoxy(board.printx, board.printy);
+	cout << "score: " << score;
 }
 
 vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point src, Point dest)
@@ -550,17 +586,18 @@ void ThePacmanGame::selectedMovmentDiff(int* ghostDir,int &countSteps) {
 	}
 
 }
+
 void ThePacmanGame::settings() {
 	system("CLS");
 	cout << "********************" << endl;
 	cout << "******SETTINGS******" << endl;
 	cout << "********************" << endl << endl;
+	cout << "1. To Change The Difficulty Of The Game Please Press 1." << endl;
+	cout << "2. To Change The Speed Of The Game Please Press 2." << endl;
+	cout << "3. If You Would Like To Enter Your Own Game Board Please Select 3." << endl;
 	char choice = '0';
 
 	while (choice == '0') {
-		cout << "1. To Change The Difficulty Of The Game Please Press 1." << endl;
-		cout << "2. To Change The Speed Of The Game Please Press 2." << endl;
-		cout << "3. If You Would Like To Enter Your Own Game Board Please Select 3." << endl;
 		choice = _getch();
 
 		if (choice != '1' && choice != '2' && choice != '3')
@@ -570,18 +607,23 @@ void ThePacmanGame::settings() {
 		else if (choice == '2')
 			selectGameSpeed();
 		else if (choice == '3') {
-			break;
-		}
+			system("CLS");
+			boardNum = 5;
 
+		}
 	}
 }
 void ThePacmanGame::ghostMovementGood(int* ghostDir, int& countMovment) {
-	if (14 <= countMovment < 20) {
+	if (countMovment > 14) {
 		ghostMovementNovice(ghostDir, countMovment);
 	}
 	else
 		ghostMovementBest();
+
+	if (countMovment > 20)
+		countMovment = 0;
 }
+
 void ThePacmanGame::selectGameSpeed() {
 	system("CLS");
 	cout << "********************" << endl;
@@ -615,6 +657,5 @@ void ThePacmanGame::selectGameSpeed() {
 			sleepTime = 150;
 			Sleep(1500);
 		}
-
 	}
 }

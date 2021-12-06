@@ -18,6 +18,7 @@ public:
 	printy = y; };
   void activateBoard(Pacman& p, Ghost ghost[], int& numOfGhosts, int boardNum);
   void PrintBoard();
+  void clearBoard();
   void setBoardCol(int col);
   void setBoardRow(int row);
   void initMat();
