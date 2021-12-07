@@ -24,8 +24,9 @@ void ThePacmanGame::run()
 		lastDir = dir; /*if the player selects a direction that will hit a wall, we avoid that direction and continue on the last direction (see lines 29-31)*/
 		if (_kbhit())
 		{
-			ifPause = 1;
 			key = _getch();
+			if ((player.getDirection(key)) != -1)
+				ifPause = 1;
 			checkValidKey(key, dir, lastDir, life, flag); /*check if the pressed key is a valid key(move or pause)*/
 		}
 		start = checkCollisionPacman(dir);
@@ -191,6 +192,7 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 	cout << "******************" << endl << endl;
 	cout << "If you wish to restart the game please press 'R'." << endl;
 	cout << "If you wish to return to the main menu please press 'M'." << endl;
+	cout << "To Enter To The Settings Please Press 'S'." << endl;
 	cout << "If you wish to return to the game please press any other key." << endl;
 	while (!_kbhit()) {
 
@@ -214,6 +216,14 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 		flag = 0;
 		system("CLS");
 		init(); /*to init the game from the begining */
+	}
+	if (trash == 's' || trash == 'S') {
+		settings();
+		system("CLS");
+		board.PrintBoard();
+		printCreatures();
+		ifPause = 0;
+		flag = 0;
 	}
 	else {
 		system("CLS");
@@ -597,9 +607,10 @@ void ThePacmanGame::settings() {
 	cout << "1. To Change The Difficulty Of The Game Please Press 1." << endl;
 	cout << "2. To Change The Speed Of The Game Please Press 2." << endl;
 	cout << "3. If You Would Like To Enter Your Own Game Board Please Select 3." << endl;
+	cout << "3. To Return Please Press Any Other Key." << endl;
 	char choice = '0';
 
-	while (choice == '0') {
+	
 		choice = _getch();
 
 		if (choice != '1' && choice != '2' && choice != '3')
@@ -611,9 +622,10 @@ void ThePacmanGame::settings() {
 		else if (choice == '3') {
 			system("CLS");
 			boardNum = 5;
+			init();
 
 		}
-	}
+	
 }
 void ThePacmanGame::ghostMovementGood(int* ghostDir, int& countMovment) {
 	if (countMovment > 14) {
