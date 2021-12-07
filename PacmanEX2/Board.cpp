@@ -53,7 +53,7 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 		  niceChar = myReadFile.get();
 		if (niceChar == '\n') {
 			if (flag) {
-				if (lastChar != '&') {
+				/*if (lastChar != '&') {
 					setBoardCol(k + 1);
 					flag = 0;
 				}
@@ -61,17 +61,20 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 				else {
 					setBoardCol(k + 21);
 					flag = 0;
-				}
+				}*/
+				setBoardCol(k + 1);
+				flag = 0;
 			}
 			k = -1;
 			i++;
 		}
 		if (niceChar == '#') {
 			boardArr[i][k] = char(178);
-			if (secFlag) {
+			/*if (secFlag) {
 				topL.setXandY(k, i);
 				secFlag = 0;
 			}
+			botR.setXandY(k, i);*/
 			botR.setXandY(k, i);
 		}
 		else if (niceChar == '%')
@@ -91,12 +94,28 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 			numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}
-		else if (niceChar == '&') 
+		else if (niceChar == '&') {
 			setPrintXandY(k, i);
-
+			/*for (int n = i; n < i + 3; n++)
+				for(int m = k; m < k + 20; m++)
+					boardArr[n][m] = ' ';*/
+		}
+		if (secFlag) {
+			topL.setXandY(k, i);
+			secFlag = 0;
+		}
 		k++;
 	}
 	setBoardRow(i + 1);
+	for (int n = printy; n < printy + 3; n++) {
+		for (int m = printx; m < printx + 20; m++) {
+			if (boardArr[n][m] == '*')
+				breadCrumbs--;
+			boardArr[n][m] = ' ';
+		}
+		if (n > i)
+			botR.setXandY(botR.getX(), n);
+	}
 	myReadFile.close();
 }
 

@@ -394,25 +394,24 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 
 }
 
-void ThePacmanGame::avoidTunnels(int ghostDir[2]) {
-	int ghost0X = ghost[0].body.getX(), ghost1X = ghost[1].body.getX(), ghost0Y = ghost[0].body.getY(), ghost1Y = ghost[1].body.getY();
+void ThePacmanGame::avoidTunnels(int ghostDir[]) {
+	int ghostx[4];
+	int ghosty[4];
+	for (int i = 0; i < numOfGhosts; i++) {
+		ghostx[i] = ghost[i].body.getX();
+		ghosty[i] = ghost[i].body.getY();
+		if (ghostx[i] == board.botR.getX())
+			ghostDir[i] = LEFT;
 
-	if (ghost0Y == 0)
-		ghostDir[0] = DOWN;
-	if (ghost0Y == 23)
-		ghostDir[0] = UP;
-	if (ghost1Y == 0)
-		ghostDir[1] = DOWN;
-	if (ghost1Y == 23)
-		ghostDir[1] = UP;
-	if (ghost0X == 0)
-		ghostDir[0] = RIGHT;
-	if (ghost0X == 78)
-		ghostDir[0] = LEFT;
-	if (ghost1X == 0)
-		ghostDir[0] = RIGHT;
-	if (ghost1X == 78)
-		ghostDir[0] = LEFT;
+		else if (ghostx[i] == board.topL.getX())
+			ghostDir[i] = RIGHT;
+
+		else if (ghosty[i] == board.botR.getY())
+			ghostDir[i] = UP;
+
+		else if (ghosty[i] == board.topL.getY())
+			ghostDir[i] = DOWN;
+	}
 }
 
 void ThePacmanGame::printCreatures() {
@@ -439,7 +438,7 @@ void ThePacmanGame::movingThroughTunnel() {
 			score++;
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
-		player.body.setXandY(player.body.getX(), board.topL.getY() + 1);
+		player.body.setXandY(player.body.getX(), board.topL.getY());
 	}
 	if (player.body.getX() == board.topL.getX()) {
 		gotoxy(player.body.getX(), player.body.getY());
@@ -457,8 +456,10 @@ void ThePacmanGame::movingThroughTunnel() {
 			score++;
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
-		player.body.setXandY(board.topL.getX() + 1, player.body.getY());
+		player.body.setXandY(board.topL.getX(), player.body.getY());
 	}
+	gotoxy(player.body.getX(), player.body.getY());
+	cout << (char)2;
 	gotoxy(board.printx, board.printy);
 	cout << "score: " << score;
 }
