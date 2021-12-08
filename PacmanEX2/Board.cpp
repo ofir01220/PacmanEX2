@@ -30,7 +30,6 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 	breadCrumbs = numOfGhosts = 0;
 	clearBoard();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
-	string userFile = "";
 	ifstream myReadFile;
 	if (boardNum == 1)
 		myReadFile.open("board_01.txt");

@@ -1,11 +1,11 @@
 #include "Pacman.h"
 
-void Pacman::move()
+/*void Pacman::move()
 {
 	body.draw(' ');
-	body.movePacman(direction);
+	body.Point::move(direction);
 	body.draw(figure);
-}
+}*/
 int Pacman::getDirection(char key)
 {
 	for (int i = 0; i < 10; i++)

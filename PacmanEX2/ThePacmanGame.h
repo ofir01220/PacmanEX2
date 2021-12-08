@@ -6,7 +6,6 @@
 #include <vector>
 #include <queue>
 
-
 class ThePacmanGame {
     enum { ESC = 27, UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3 };
     Pacman player;
@@ -38,7 +37,7 @@ public:
     void ghostMovementNovice(int* ghostDir, int& countMovment);
     void ghostMovementGood(int* ghostDir, int& countMovment);
     void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir);
-    void avoidTunnels(int ghostDir[2]); /* to not let the ghosts enter the tunnels */
+    void avoidTunnels(int ghostDir[]); /* to not let the ghosts enter the tunnels */
         void ghostMovementBest();
     vector<int> shortestPath(char mat[][80], int rRow, int rCol, Point src, Point dest);
     struct Node {

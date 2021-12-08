@@ -20,8 +20,7 @@ public:
 		firsty = _y;
 	}
 	void draw(char ch); /*to draw the figure*/
-	void movePacman(int direction);
-	void moveGhost(int direction);
+	void move(int direction);
 	int getX() { return x; };
 	int getY() { return y; };
 	int getfirstX() { return firstx; };
