@@ -24,6 +24,7 @@ public:
   void initMat();
   bool isValid(int row, int col) { return (row >= 0) && (col >= 0) && (row < rowboard1) && (col < colboard1); }
   void setDiff(int diff) { difficult = diff; };
+  void getBoardFromUser();
 };
 #endif
 

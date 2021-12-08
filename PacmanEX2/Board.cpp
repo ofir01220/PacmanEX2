@@ -31,19 +31,18 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 	clearBoard();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
 	ifstream myReadFile;
-	if (boardNum == 1)
-		myReadFile.open("board_01.txt");
-	else if (boardNum == 2)
-		myReadFile.open("board_02.txt");
-	else if(boardNum == 3){}
-	else if (boardNum == 5 ) {
+	if (boardNum == 5) {
 		if (boardname == "") {
-			cout << "Enter a file's name (then press ENTER): ";
-			cin >> boardname;
+			getBoardFromUser();
 		}
 		myReadFile.open(boardname);
 		system("CLS");
 	}
+    else if (boardNum == 1)
+		myReadFile.open("board_01.txt");
+	else if (boardNum == 2)
+		myReadFile.open("board_02.txt");
+	else if(boardNum == 3){}
 
 	char niceChar = ' ', lastChar = ' ';
 	while (!myReadFile.eof()) {
@@ -52,15 +51,6 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 		  niceChar = myReadFile.get();
 		if (niceChar == '\n') {
 			if (flag) {
-				/*if (lastChar != '&') {
-					setBoardCol(k + 1);
-					flag = 0;
-				}
-				else if (lastChar == '&' && (k == 1) || (k == 0)){}
-				else {
-					setBoardCol(k + 21);
-					flag = 0;
-				}*/
 				setBoardCol(k + 1);
 				flag = 0;
 			}
@@ -69,11 +59,6 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 		}
 		if (niceChar == '#') {
 			boardArr[i][k] = char(178);
-			/*if (secFlag) {
-				topL.setXandY(k, i);
-				secFlag = 0;
-			}
-			botR.setXandY(k, i);*/
 			botR.setXandY(k, i);
 		}
 		else if (niceChar == '%')
@@ -95,9 +80,6 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 		}
 		else if (niceChar == '&') {
 			setPrintXandY(k, i);
-			/*for (int n = i; n < i + 3; n++)
-				for(int m = k; m < k + 20; m++)
-					boardArr[n][m] = ' ';*/
 		}
 		if (secFlag) {
 			topL.setXandY(k, i);
@@ -130,6 +112,21 @@ void Board::initMat() {
 }
 
 
+void Board::getBoardFromUser() {
+	ifstream myReadFile;
+	cout << "Please Enter A File's Name:";
+	cin >> boardname;
+	myReadFile.open(boardname);
+	while (!myReadFile.is_open()) {
+		system("CLS");
+		cout << "No File By The Name:" << boardname << " Was Found, Please Try Again." << endl;
 
+			cout << "Please Enter A File's Name:";
+			cin >> boardname;
+			myReadFile.open(boardname);
+		
+    }
+	myReadFile.close();
+}
 
 

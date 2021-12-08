@@ -46,7 +46,6 @@ void ThePacmanGame::run()
 
 		GhostEatPacman(life, flag, start, dir, ghostDir);
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
-			
 			selectedMovmentDiff(ghostDir, countMovment);
 			countMovment++;
 			ghostDelay = FALSE;
@@ -239,20 +238,18 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 int ThePacmanGame::endGameConditions(const int life, int &flag) {
 	if (score == board.breadCrumbs && (boardNum == 4 || boardNum == 6)) { /*max point.*/
 		winGame();
-		return 0;
-		init();
 		score = 0;
+		board.difficult = 0;
 		flag = 0;
 		boardNum = 1;
+		ifPause = 0;
+		return 0;
 	}
 	else if (score == board.breadCrumbs) {
 		boardNum++;
 		if(board.difficult != 2)
 			board.difficult = board.difficult + 1;
 		system("CLS");
-		//board.activateBoard(player, ghost, this->numOfGhosts, boardNum);
-		//board.PrintBoard();
-		//printCreatures();
 		init();
 		score = 0;
 		flag = 0;
