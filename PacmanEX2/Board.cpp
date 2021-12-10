@@ -29,6 +29,7 @@ void Board::setBoardRow(int row) {
 void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
 	breadCrumbs = numOfGhosts = 0;
 	clearBoard();
+	initVec();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
 	ifstream myReadFile;
 	if (boardNum == 5) {
@@ -61,11 +62,14 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 			boardArr[i][k] = char(178);
 			botR.setXandY(k, i);
 		}
-		else if (niceChar == '%')
+		else if (niceChar == '%') {
 			boardArr[i][k] = ' ';
+			posForFruit.push_back(Point(k, i));
+		}
 		else if (niceChar == ' ') {
 			boardArr[i][k] = '*';
 			breadCrumbs++;
+			posForFruit.push_back(Point(k, i));
 		}
 		else if (niceChar == '@') {
 			boardArr[i][k] = ' ';
@@ -111,7 +115,6 @@ void Board::initMat() {
 		}
 }
 
-
 void Board::getBoardFromUser() {
 	ifstream myReadFile;
 	cout << "Please Enter A File's Name:";
@@ -128,6 +131,11 @@ void Board::getBoardFromUser() {
 		
     }
 	myReadFile.close();
+}
+
+void Board::initVec() {
+	while (posForFruit.size() != 0)
+		posForFruit.pop_back();
 }
 
 

@@ -11,6 +11,7 @@ class Point {
 	int x = 25, y = 1;
 	int firstx = 0, firsty = 0;
 public:
+	Point(int _x = 0, int _y = 0) :x(_x), y(_y) {}
 	void setXandY(int _x, int _y) {
 		x = _x;
 		y = _y;

@@ -2,7 +2,7 @@
 #define _BOARD_H_
 #include "Ghost.h"
 #include <fstream>
-
+#include <vector>
 class Board {
 	enum { ROW = 25, COLUMN = 80, BEGINNER = 0, INTERMIDATE = 1, EXPERT = 2 };
 	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
@@ -12,6 +12,7 @@ class Board {
 	char boardArr[25][80];
 	int printx = 0, printy = 0;
 	Point topL, botR;
+	vector<Point> posForFruit;
 	friend class ThePacmanGame;
 
 public:
@@ -26,6 +27,7 @@ public:
   bool isValid(int row, int col) { return (row >= 0) && (col >= 0) && (row < rowboard1) && (col < colboard1); }
   void setDiff(int diff) { difficult = diff; };
   void getBoardFromUser();
+  void initVec();
 };
 #endif
 

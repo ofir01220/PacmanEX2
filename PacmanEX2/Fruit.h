@@ -6,10 +6,12 @@ class Fruit : public GameObject {
 	int lifeTime = 0;
 	int holdTime = 40;
 	int On = 0;
+	int randNum;
 public:
-	int addScore() {
-		return (5 + rand() % 5);
+	void initRandNum() {
+		randNum = (5 + rand() % 5);
 	}
+	int addScore() { return randNum; }
 	void runningTime() {
 		lifeTime--;
 	}

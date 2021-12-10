@@ -55,6 +55,7 @@ void ThePacmanGame::run()
 		else
 			ghostDelay = TRUE;
 		GhostEatPacman(life, flag, start, dir, ghostDir);
+		pacmanEatFruit();
 	} while (endGameConditions(life, flag));
 
 	system("CLS");
@@ -596,6 +597,7 @@ void ThePacmanGame::selectedMovmentDiff(int* ghostDir,int &countSteps) {
 	else if (board.difficult == 2) {
 		ghostMovementBest();
 	}
+	ghostEatFruit();
 	if (fruit.HoldTime() == 0) {
 		initFruit();
 		fruit.setFruitOn(1);
@@ -688,18 +690,14 @@ void ThePacmanGame::selectGameSpeed() {
 }
 
 void ThePacmanGame::initFruit() {
-	fruit.setFigure(char(235));
+	fruit.initRandNum();
+	fruit.setFigure(fruit.addScore() + '0');
 	fruit.setHold(40);
 	fruit.setLife(60);
-	int x = rand() % board.colboard1;
-	int y = rand() % board.rowboard1;
-
-	while (board.boardArr[y][x] == char(178)) {
-		int x = rand() % board.colboard1;
-		int y = rand() % board.rowboard1;
-	}
-	fruit.body.setXandY(x, y);
+	int i = rand() % board.posForFruit.size();
+	fruit.body.setXandY(board.posForFruit[i].getX(), board.posForFruit[i].getY());
 }
+
 void ThePacmanGame::fruitMovment() {
 	avoidTunnelsFruit();
 	while (!checkCollisionFruit()) /* Checks if the next move is not valid. */
@@ -765,6 +763,7 @@ int ThePacmanGame::checkCollisionFruit() {
 	}
 
 }
+
 void ThePacmanGame::pacmanEatFruit() {
 	if (fruit.fruitOn() == 1) {
 		if (player.body.getX() == fruit.body.getX() && player.body.getY() == fruit.body.getY()) {
@@ -773,6 +772,17 @@ void ThePacmanGame::pacmanEatFruit() {
 			fruit.setLife(0);
 			gotoxy(board.printx, board.printy);
 			cout << "score: " << score;
+		}
+	}
+}
+
+void ThePacmanGame::ghostEatFruit() {
+	if (fruit.fruitOn() == 1) {
+		for (int i = 0; i < numOfGhosts; i++){
+			if (ghost[i].body.getX() == fruit.body.getX() && ghost[i].body.getY() == fruit.body.getY()) {
+				fruit.setHold(40);
+				fruit.setLife(0);
+			}
 		}
 	}
 }

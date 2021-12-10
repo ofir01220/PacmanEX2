@@ -3,7 +3,6 @@
 
 #include "io_utils.h"
 #include "Board.h"
-#include <vector>
 #include <queue>
 
 class ThePacmanGame {
@@ -54,5 +53,6 @@ public:
     void avoidTunnelsFruit();
     int checkCollisionFruit();
     void pacmanEatFruit();
+    void ghostEatFruit();
 };
 #endif
