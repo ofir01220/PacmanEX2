@@ -17,6 +17,7 @@ class ThePacmanGame {
     int numOfGhosts;
     Ghost ghost[4];
     Board board;
+    Fruit fruit;
 public:
     void init();
     void run();
@@ -48,5 +49,6 @@ public:
     void selectedMovmentDiff(int* ghostDir, int& countSteps);
     void settings();
     void selectGameSpeed();
+    void initFruit();
 };
 #endif

@@ -1,6 +1,6 @@
 #ifndef _GHOST_H_
 #define _GHOST_H_
-#include "Pacman.h"
+#include "Fruit.h"
 
 class Ghost: public GameObject {
 	int countmovment = 20;

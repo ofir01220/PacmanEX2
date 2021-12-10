@@ -671,3 +671,9 @@ void ThePacmanGame::selectGameSpeed() {
 		}
 	}
 }
+
+void ThePacmanGame::initFruit() {
+	int x = rand() % board.colboard1;
+	int y = rand() % board.rowboard1;
+	
+}
