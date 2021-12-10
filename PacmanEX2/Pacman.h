@@ -13,5 +13,14 @@ public:
 			arrowKeys[i] = keys[i];
 	}
 	int getDirection(char key);
+	void eatCrumb() {
+		crumbs--;
+	}
+	void initilizeCrumbs(int number) {
+		crumbs = number;
+	}
+	int Crumbs() {
+		return crumbs;
+	}
 };
 #endif

@@ -7,6 +7,7 @@ void ThePacmanGame::init()
 	board.activateBoard(player, ghost, this->numOfGhosts,boardNum);
 	for(int i = 0; i < numOfGhosts; i++)
 		ghost[i].setFigure((char)234);
+	player.initilizeCrumbs(board.breadCrumbs);
 	board.PrintBoard();
 	printCreatures();
 	board.initMat();
@@ -245,7 +246,7 @@ int ThePacmanGame::endGameConditions(const int life, int &flag) {
 		ifPause = 0;
 		return 0;
 	}
-	else if (score == board.breadCrumbs) {
+	else if (player.Crumbs() == 0) {
 		boardNum++;
 		if(board.difficult != 2)
 			board.difficult = board.difficult + 1;
@@ -293,6 +294,7 @@ void ThePacmanGame::yummy(int life) {
 	if (board.boardArr[player.body.getY()][player.body.getX()] == '*') { /*if the user ate crumb.*/
 		board.boardArr[player.body.getY()][player.body.getX()] = ' '; /*we delete the crumb from the board*/
 		score++;
+		player.eatCrumb();
 		gotoxy(board.printx, board.printy);
 		cout << "score: " << score << ' ' << "life: " << life;
 		gotoxy(board.printx, board.printy + 1);
@@ -607,23 +609,22 @@ void ThePacmanGame::settings() {
 	cout << "3. To Return Please Press Any Other Key." << endl;
 	char choice = '0';
 
-	
-		choice = _getch();
+	choice = _getch();
 
-		if (choice != '1' && choice != '2' && choice != '3')
-			choice = '0';
-		else if (choice == '1') 
-				chooseLevel();
-		else if (choice == '2')
-			selectGameSpeed();
-		else if (choice == '3') {
-			system("CLS");
-			boardNum = 5;
-			init();
-
-		}
-	
+	if (choice != '1' && choice != '2' && choice != '3')
+		choice = '0';
+	else if (choice == '1') 
+			chooseLevel();
+	else if (choice == '2')
+		selectGameSpeed();
+	else if (choice == '3') {
+		system("CLS");
+		boardNum = 5;
+		board.boardname = "";
+		init();
+	}
 }
+
 void ThePacmanGame::ghostMovementGood(int* ghostDir, int& countMovment) {
 	if (countMovment > 14) {
 		ghostMovementNovice(ghostDir, countMovment);

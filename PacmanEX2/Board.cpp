@@ -39,9 +39,9 @@ void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardN
 		system("CLS");
 	}
     else if (boardNum == 1)
-		myReadFile.open("board_01.txt");
+		myReadFile.open("pacman_1.screen.txt");
 	else if (boardNum == 2)
-		myReadFile.open("board_02.txt");
+		myReadFile.open("pacman_2.screen.txt");
 	else if(boardNum == 3){}
 
 	char niceChar = ' ', lastChar = ' ';
@@ -116,6 +116,7 @@ void Board::getBoardFromUser() {
 	ifstream myReadFile;
 	cout << "Please Enter A File's Name:";
 	cin >> boardname;
+	boardname += ".txt";
 	myReadFile.open(boardname);
 	while (!myReadFile.is_open()) {
 		system("CLS");

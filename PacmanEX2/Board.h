@@ -2,6 +2,7 @@
 #define _BOARD_H_
 #include "Ghost.h"
 #include <fstream>
+
 class Board {
 	enum { ROW = 25, COLUMN = 80, BEGINNER = 0, INTERMIDATE = 1, EXPERT = 2 };
 	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
