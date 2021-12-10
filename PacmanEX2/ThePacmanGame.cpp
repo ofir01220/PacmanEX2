@@ -46,6 +46,7 @@ void ThePacmanGame::run()
 			Sleep(sleepTime);
 
 		GhostEatPacman(life, flag, start, dir, ghostDir);
+		pacmanEatFruit();
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
 			selectedMovmentDiff(ghostDir, countMovment);
 			countMovment++;
@@ -595,6 +596,20 @@ void ThePacmanGame::selectedMovmentDiff(int* ghostDir,int &countSteps) {
 	else if (board.difficult == 2) {
 		ghostMovementBest();
 	}
+	if (fruit.HoldTime() == 0) {
+		initFruit();
+		fruit.setFruitOn(1);
+	}
+	if (fruit.LifeTime() != 0) {
+		fruitMovment();
+		fruit.runningTime();
+	}
+	else {
+		fruit.setFruitOn(0);
+		gotoxy(fruit.body.getX(), fruit.body.getY());
+		cout << board.boardArr[fruit.body.getY()][fruit.body.getX()];
+		fruit.holdingTime();
+	}
 
 }
 
@@ -673,7 +688,91 @@ void ThePacmanGame::selectGameSpeed() {
 }
 
 void ThePacmanGame::initFruit() {
+	fruit.setFigure(char(235));
+	fruit.setHold(40);
+	fruit.setLife(60);
 	int x = rand() % board.colboard1;
 	int y = rand() % board.rowboard1;
+
+	while (board.boardArr[y][x] == char(178)) {
+		int x = rand() % board.colboard1;
+		int y = rand() % board.rowboard1;
+	}
+	fruit.body.setXandY(x, y);
+}
+void ThePacmanGame::fruitMovment() {
+	avoidTunnelsFruit();
+	while (!checkCollisionFruit()) /* Checks if the next move is not valid. */
+		fruit.setDirection(rand() % 4);
+		int xBeforeMove = fruit.body.getX();
+		int yBeforeMove = fruit.body.getY();
+		fruit.move();
+
+		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
+			gotoxy(xBeforeMove, yBeforeMove);
+			cout << '*';
+		}
+}
+
+void ThePacmanGame::avoidTunnelsFruit() {
+		if (fruit.body.getX() == board.botR.getX())
+			fruit.setDirection(LEFT);
+
+		else if (fruit.body.getX() == board.topL.getX())
+			fruit.setDirection(RIGHT);
+
+		else if (fruit.body.getY() == board.botR.getY())
+			fruit.setDirection(UP);
+
+		else if (fruit.body.getY() == board.topL.getY())
+			fruit.setDirection(DOWN);
 	
+}
+
+int ThePacmanGame::checkCollisionFruit() {
+	switch (fruit.direction) {
+	case 0: // UP
+		if (board.boardArr[fruit.body.getY() - 1][fruit.body.getX()] == char(178))
+			return 0;
+		else
+			return 1;
+
+		break;
+	case 1: // DOWN
+		if (board.boardArr[fruit.body.getY() + 1][fruit.body.getX()] == char(178))
+			return 0;
+		else
+			return 1;
+
+		break;
+	case 2: // LEFT
+		if (board.boardArr[fruit.body.getY()][fruit.body.getX() - 1] == char(178))
+			return 0;
+		else
+			return 1;
+
+		break;
+	case 3: // (3)- RIGHT
+		if (board.boardArr[fruit.body.getY()][fruit.body.getX() + 1] == char(178))
+			return 0;
+		else
+			return 1;
+
+		break;
+	default:
+		return 0;
+		break;
+	}
+
+}
+void ThePacmanGame::pacmanEatFruit() {
+	if (fruit.fruitOn() == 1) {
+		if (player.body.getX() == fruit.body.getX() && player.body.getY() == fruit.body.getY()) {
+			score += fruit.addScore();
+			fruit.setHold(40);
+			fruit.setLife(0);
+			gotoxy(board.printx, board.printy);
+			cout << "score: " << score;
+		}
+	}
 }

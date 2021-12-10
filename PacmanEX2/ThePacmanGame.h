@@ -50,5 +50,9 @@ public:
     void settings();
     void selectGameSpeed();
     void initFruit();
+    void fruitMovment();
+    void avoidTunnelsFruit();
+    int checkCollisionFruit();
+    void pacmanEatFruit();
 };
 #endif
