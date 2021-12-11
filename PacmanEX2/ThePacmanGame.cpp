@@ -239,7 +239,7 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 }
 
 int ThePacmanGame::endGameConditions(const int life, int &flag) {
-	if (score == board.breadCrumbs && (boardNum == 4 || boardNum == 6)) { /*max point.*/
+	if (player.Crumbs() == 0 && (boardNum == 4 || boardNum == 6)) { /*max point.*/
 		winGame();
 		score = 0;
 		board.difficult = 0;
@@ -438,6 +438,7 @@ void ThePacmanGame::movingThroughTunnel() {
 		cout << ' ';
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
+			player.eatCrumb();
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
 		player.body.setXandY(player.body.getX(), board.botR.getY() - 1);
@@ -447,6 +448,7 @@ void ThePacmanGame::movingThroughTunnel() {
 		cout << ' ';
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
+			player.eatCrumb();
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
 		player.body.setXandY(player.body.getX(), board.topL.getY());
@@ -456,6 +458,7 @@ void ThePacmanGame::movingThroughTunnel() {
 		cout << ' ';
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
+			player.eatCrumb();
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
 		player.body.setXandY(board.botR.getX() - 1, player.body.getY());
@@ -465,6 +468,7 @@ void ThePacmanGame::movingThroughTunnel() {
 		cout << ' ';
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
+			player.eatCrumb();
 			board.boardArr[player.body.getY()][player.body.getX()] = ' ';
 		}
 		player.body.setXandY(board.topL.getX(), player.body.getY());
@@ -612,6 +616,7 @@ void ThePacmanGame::selectedMovmentDiff(int* ghostDir,int &countSteps) {
 		cout << board.boardArr[fruit.body.getY()][fruit.body.getX()];
 		fruit.holdingTime();
 	}
+	ghostEatFruit();
 
 }
 
@@ -785,4 +790,5 @@ void ThePacmanGame::ghostEatFruit() {
 			}
 		}
 	}
+	printCreatures();
 }
