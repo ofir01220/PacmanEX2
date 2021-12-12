@@ -1,4 +1,12 @@
 #include "Board.h"
+#include <string>
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+namespace fs = std::filesystem;
+
+
+
 
 
 void Board::PrintBoard() { //print the game screan.
@@ -26,25 +34,27 @@ void Board::setBoardRow(int row) {
 	this->rowboard1 = row;
 }
 
-void Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
+void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
 	breadCrumbs = numOfGhosts = 0;
 	clearBoard();
 	initVec();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
 	ifstream myReadFile;
-	if (boardNum == 5) {
+	if (boardNum == -1) {
 		if (boardname == "") {
 			getBoardFromUser();
 		}
 		myReadFile.open(boardname);
 		system("CLS");
 	}
-    else if (boardNum == 1)
-		myReadFile.open("pacman_1.screen.txt");
-	else if (boardNum == 2)
-		myReadFile.open("pacman_2.screen.txt");
-	else if(boardNum == 3){}
-
+	else {
+		if(numOfBoards != 0)
+		myReadFile.open(fileNames[boardNum - 1]);
+		else {
+			cout << "There Are No '.screen' Files In The Directory Please Insert Screen Files" << endl;
+			exit(0);
+		}
+	}
 	char niceChar = ' ', lastChar = ' ';
 	while (!myReadFile.eof()) {
 		if(lastChar != '&' || niceChar != '\n')
@@ -117,9 +127,22 @@ void Board::initMat() {
 
 void Board::getBoardFromUser() {
 	ifstream myReadFile;
+	bool flag = FALSE;
 	cout << "Please Enter A File's Name:";
 	cin >> boardname;
-	boardname += ".txt";
+	while (!flag) {
+		if (boardname[boardname.size() - 1] != 'n' || boardname[boardname.size() - 2] != 'e' || boardname[boardname.size() - 3] != 'e'
+			|| boardname[boardname.size() - 4] != 'r' || boardname[boardname.size() - 5] != 'c'
+			|| boardname[boardname.size() - 6] != 's' || boardname[boardname.size() - 7] != '.') {
+			system("CLS");
+			cout << "Wrong input! please put a file's name with '.screen' in the end: ";
+			cin >> boardname;
+		}
+		else
+			flag = TRUE;
+			
+	}
+	
 	myReadFile.open(boardname);
 	while (!myReadFile.is_open()) {
 		system("CLS");
@@ -138,4 +161,14 @@ void Board::initVec() {
 		posForFruit.pop_back();
 }
 
+Board::Board() {
+	std::string path = "C:\\Users\\ofirc\\source\\repos\\PacManEx2.8\\PacmanEX2";
+	for (const auto& entry : fs::directory_iterator(path)) {
+		if (entry.path().filename().extension() == ".screen") {
+			string s = entry.path().filename().string();
+			fileNames.push_back(s);
+			numOfBoards++;
+		}
+	}
+}
 

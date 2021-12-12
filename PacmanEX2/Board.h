@@ -8,9 +8,10 @@ class Board {
 	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
 	int difficult = BEGINNER;
 	string boardname = "";
+	vector<string> fileNames;
 	char mat[25][80];
 	char boardArr[25][80];
-	int printx = 0, printy = 0;
+	int printx = 0, printy = 0, numOfBoards = 0;
 	Point topL, botR;
 	vector<Point> posForFruit;
 	friend class ThePacmanGame;
@@ -21,6 +22,7 @@ public:
   void activateBoard(Pacman& p, Ghost ghost[], int& numOfGhosts, int boardNum);
   void PrintBoard();
   void clearBoard();
+   Board();
   void setBoardCol(int col);
   void setBoardRow(int row);
   void initMat();

@@ -206,6 +206,7 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
+		board.difficult = 0;
 		system("CLS");
 		mainMenu();
 		init();
@@ -239,7 +240,7 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 }
 
 int ThePacmanGame::endGameConditions(const int life, int &flag) {
-	if (player.Crumbs() == 0 && (boardNum == 4 || boardNum == 6)) { /*max point.*/
+	if (player.Crumbs() == 0 && (boardNum == board.numOfBoards  || boardNum == -1)) { /*max point.*/
 		winGame();
 		score = 0;
 		board.difficult = 0;
@@ -641,7 +642,7 @@ void ThePacmanGame::settings() {
 		selectGameSpeed();
 	else if (choice == '3') {
 		system("CLS");
-		boardNum = 5;
+		boardNum = -1;
 		board.boardname = "";
 		init();
 	}
