@@ -5,10 +5,6 @@
 #include <fstream>
 namespace fs = std::filesystem;
 
-
-
-
-
 void Board::PrintBoard() { //print the game screan.
 	for (int i = 0; i < rowboard1; i++) {
 		for (int k = 0; k < colboard1; k++) {
@@ -39,6 +35,7 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 	clearBoard();
 	initVec();
 	int i = 0, k = 0, flag = 1, secFlag = 1;
+	string trash;
 	ifstream myReadFile;
 	if (boardNum == -1) {
 		if (boardname == "") {
@@ -67,6 +64,10 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 			}
 			k = -1;
 			i++;
+			if (i == 25) {
+				i--;
+				break;
+			}
 		}
 		if (niceChar == '#') {
 			boardArr[i][k] = char(178);
@@ -74,12 +75,10 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 		}
 		else if (niceChar == '%') {
 			boardArr[i][k] = ' ';
-			posForFruit.push_back(Point(k, i));
 		}
 		else if (niceChar == ' ') {
 			boardArr[i][k] = '*';
 			breadCrumbs++;
-			posForFruit.push_back(Point(k, i));
 		}
 		else if (niceChar == '@') {
 			boardArr[i][k] = ' ';
@@ -89,7 +88,8 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 		else if (niceChar == '$') {
 			ghost[numOfGhosts].body.setXandY(k, i);
 			ghost[numOfGhosts].body.setStartPos(k, i);
-			numOfGhosts++;
+			if(numOfGhosts < 4)
+				numOfGhosts++;
 			boardArr[i][k] = ' ';
 		}
 		else if (niceChar == '&') {
@@ -98,6 +98,10 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 		if (secFlag) {
 			topL.setXandY(k, i);
 			secFlag = 0;
+		}
+		if (k == 79) {
+			getline(myReadFile, trash);
+			k = -1;
 		}
 		k++;
 	}
@@ -120,8 +124,12 @@ void Board::initMat() {
 		for (int j = 0; j < colboard1; j++) {
 			if (boardArr[i][j] == char(178))
 				mat[i][j] = '0';
-			else
+			else {
 				mat[i][j] = '1';
+				if (boardArr[i][j] == '*') {
+					posForFruit.push_back(Point(j, i));
+				}
+			}
 		}
 }
 
@@ -162,7 +170,7 @@ void Board::initVec() {
 }
 
 Board::Board() {
-	std::string path = "C:\\Users\\ofirc\\source\\repos\\PacManEx2.8\\PacmanEX2";
+	std::string path = ".";
 	for (const auto& entry : fs::directory_iterator(path)) {
 		if (entry.path().filename().extension() == ".screen") {
 			string s = entry.path().filename().string();

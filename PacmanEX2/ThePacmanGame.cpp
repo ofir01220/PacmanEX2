@@ -568,7 +568,7 @@ vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point
 	}
 
 	if (!ok) //if the destination is not reachable
-		return (vector<int>)0;
+		return (vector<int>)-1;
 }
 
 void ThePacmanGame::ghostMovementBest() {
@@ -579,14 +579,17 @@ void ThePacmanGame::ghostMovementBest() {
 		pacman.setXandY(player.body.getY(), player.body.getX());
 		currGhost.setXandY(ghost[i].body.getY(), ghost[i].body.getX());
 		path = shortestPath(board.mat, board.rowboard1, board.colboard1, currGhost, pacman);
-		ghost[i].setDirection(path[0]);
-		lastX = ghost[i].body.getX();
-		lastY = ghost[i].body.getY();
-		ghost[i].move();
-		if (board.boardArr[lastY][lastX] == '*') {
-			gotoxy(lastX, lastY);
-			cout << '*';
+		if (path[0] != -1) {
+			ghost[i].setDirection(path[0]);
+			lastX = ghost[i].body.getX();
+			lastY = ghost[i].body.getY();
+			ghost[i].move();
+			if (board.boardArr[lastY][lastX] == '*') {
+				gotoxy(lastX, lastY);
+				cout << '*';
+			}
 		}
+		
 		board.mat[player.body.getY()][player.body.getX()] = '1';
 		board.mat[ghost[i].body.getY()][ghost[i].body.getX()] = '1';
 	}
