@@ -75,15 +75,18 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 		}
 		else if (niceChar == '%') {
 			boardArr[i][k] = ' ';
+			botR.setXandY(k, i);
 		}
 		else if (niceChar == ' ') {
 			boardArr[i][k] = '*';
 			breadCrumbs++;
+			botR.setXandY(k, i);
 		}
 		else if (niceChar == '@') {
 			boardArr[i][k] = ' ';
 			p.body.setXandY(k, i);
 			p.body.setStartPos(k, i);
+			botR.setXandY(k, i);
 		}
 		else if (niceChar == '$') {
 			ghost[numOfGhosts].body.setXandY(k, i);
@@ -91,6 +94,7 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 			if(numOfGhosts < 4)
 				numOfGhosts++;
 			boardArr[i][k] = ' ';
+			botR.setXandY(k, i);
 		}
 		else if (niceChar == '&') {
 			setPrintXandY(k, i);
