@@ -19,8 +19,9 @@ public:
 	void initilizeCrumbs(int number) {
 		crumbs = number;
 	}
-	int Crumbs() {
+	const int Crumbs() {
 		return crumbs;
 	}
+	char drawchar() { return char(002); }
 };
 #endif

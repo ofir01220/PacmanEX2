@@ -18,16 +18,17 @@ public:
 	void holdingTime() {
 		holdTime--;
 	}
-	int LifeTime() {
+	const int LifeTime() {
 		return lifeTime;
 	}
-	int HoldTime() {
+	const int HoldTime() {
 		return holdTime;
 	}
-	int fruitOn() { return On; }
+	const int fruitOn() { return On; }
 	void setFruitOn(int i) { On = i; }
 	void setLife(const int k) { lifeTime = k; }
 	void setHold(const int k) { holdTime = k; }
-};
+	char drawchar() {return (char)randNum + '0';}
+	};
 
 #endif

@@ -8,16 +8,16 @@ void Point::draw(char ch) {
 
 void Point::move(int direction) {
 	switch (direction) {
-	case 0: // UP
+	case UP: 
 		y = y - 1;
 		break;
-	case 1: // DOWN
+	case DOWN: 
 		y = y + 1;
 		break;
-	case 2: // LEFT
+	case LEFT: 
 		x = x - 1;
 		break;
-	case 3: // RIGHT
+	case RIGHT: 
 		x = x + 1;
 		break;
 

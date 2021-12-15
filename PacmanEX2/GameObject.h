@@ -3,7 +3,7 @@
 #include "Point.h"
 
 class GameObject {
-	int direction = 3;
+	int direction = UP;
 	char figure;
 	Point body;
 	friend class ThePacmanGame;
@@ -19,10 +19,11 @@ public:
 	{
 		direction = dir;
 	}
-	void printBody(char ch)
+	void printBody(const char ch)
 	{
 		body.draw(ch);
 	}
+	virtual char drawchar() = 0;
 };
 
 

@@ -6,7 +6,7 @@
 #include <queue>
 
 class ThePacmanGame {
-    enum { ESC = 27, UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3 };
+  
     Pacman player;
     int numOfBoards;
     int boardNum = 1;

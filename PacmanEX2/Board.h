@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 class Board {
-	enum { ROW = 25, COLUMN = 80, BEGINNER = 0, INTERMIDATE = 1, EXPERT = 2 };
+	const enum { ROW = 25, COLUMN = 80, BEGINNER = 0, INTERMIDATE = 1, EXPERT = 2 };
 	int rowboard1 = 0, colboard1 = 0, breadCrumbs = 0;
 	int difficult = BEGINNER;
 	string boardname = "";

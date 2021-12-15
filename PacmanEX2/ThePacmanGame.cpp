@@ -3,10 +3,10 @@
 void ThePacmanGame::init()
 {
 	player.setArrowKeys("wxadsWXADS");
-	player.setFigure((char)002);
+	player.setFigure(player.drawchar());
 	board.activateBoard(player, ghost, this->numOfGhosts,boardNum);
 	for(int i = 0; i < numOfGhosts; i++)
-		ghost[i].setFigure((char)234);
+		ghost[i].setFigure(ghost[i].drawchar());
 	player.initilizeCrumbs(board.breadCrumbs);
 	board.PrintBoard();
 	printCreatures();
@@ -66,28 +66,28 @@ void ThePacmanGame::run()
 int ThePacmanGame::checkCollisionPacman(int dir) /*check if the next move is valid.*/
 {
 	switch (dir) {
-	case 0: // UP
+	case UP: 
 		if (board.boardArr[player.body.getY() - 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 1: // DOWN
+	case DOWN: 
 		if (board.boardArr[player.body.getY() + 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 2: // LEFT
+	case LEFT: 
 		if  (board.boardArr[player.body.getY()][player.body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 3: // (3)- RIGHT
+	case RIGHT: 
 		if (board.boardArr[player.body.getY()][player.body.getX() + 1] == char(178))
 			return 0;
 		else
@@ -255,7 +255,6 @@ int ThePacmanGame::endGameConditions(const int life, int &flag) {
 			board.difficult = board.difficult + 1;
 		system("CLS");
 		init();
-		score = 0;
 		flag = 0;
 	}
 	else if (life == 0) {
@@ -341,28 +340,28 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 
 int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 	switch (dir) {
-	case 0: // UP
+	case UP:
 		if (board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 1: // DOWN
+	case DOWN:
 		if (board.boardArr[ghost[ghostNum].body.getY() + 1][ghost[ghostNum].body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 2: // LEFT
+	case LEFT: 
 		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 3: // (3)- RIGHT
+	case RIGHT: 
 		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 1] == char(178))
 			return 0;
 		else
@@ -427,9 +426,9 @@ void ThePacmanGame::avoidTunnels(int ghostDir[]) {
 }
 
 void ThePacmanGame::printCreatures() {
-	player.printBody((char)002);
+	player.printBody(player.drawchar());
 	for (int i = 0; i < numOfGhosts; i++) {
-		ghost[i].printBody((char)234);
+		ghost[i].printBody(ghost[i].drawchar());
 	}
 }
 
@@ -475,7 +474,7 @@ void ThePacmanGame::movingThroughTunnel() {
 		player.body.setXandY(board.topL.getX(), player.body.getY());
 	}
 	gotoxy(player.body.getX(), player.body.getY());
-	cout << (char)2;
+	cout << player.drawchar();
 	gotoxy(board.printx, board.printy);
 	cout << "score: " << score;
 }
@@ -700,7 +699,7 @@ void ThePacmanGame::selectGameSpeed() {
 
 void ThePacmanGame::initFruit() {
 	fruit.initRandNum();
-	fruit.setFigure(fruit.addScore() + '0');
+	fruit.setFigure(fruit.drawchar());
 	fruit.setHold(40);
 	fruit.setLife(60);
 	int i = rand() % board.posForFruit.size();
@@ -738,28 +737,28 @@ void ThePacmanGame::avoidTunnelsFruit() {
 
 int ThePacmanGame::checkCollisionFruit() {
 	switch (fruit.direction) {
-	case 0: // UP
+	case UP: 
 		if (board.boardArr[fruit.body.getY() - 1][fruit.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 1: // DOWN
+	case DOWN: 
 		if (board.boardArr[fruit.body.getY() + 1][fruit.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 2: // LEFT
+	case LEFT: 
 		if (board.boardArr[fruit.body.getY()][fruit.body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case 3: // (3)- RIGHT
+	case RIGHT: 
 		if (board.boardArr[fruit.body.getY()][fruit.body.getX() + 1] == char(178))
 			return 0;
 		else

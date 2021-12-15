@@ -3,10 +3,9 @@
 
 #include <iostream>
 #include "io_utils.h"
-
-
 using namespace std;
 
+const enum { ESC = 27, UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3 };
 class Point {
 	int x = 25, y = 1;
 	int firstx = 0, firsty = 0;
@@ -22,10 +21,10 @@ public:
 	}
 	void draw(char ch); /*to draw the figure*/
 	void move(int direction);
-	int getX() { return x; };
-	int getY() { return y; };
-	int getfirstX() { return firstx; };
-	int getfirstY() { return firsty; };
+	const int getX() { return x; };
+	const int getY() { return y; };
+	const int getfirstX() { return firstx; };
+	const int getfirstY() { return firsty; };
 };
 
 #endif

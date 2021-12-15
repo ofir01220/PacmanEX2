@@ -7,6 +7,7 @@ class Ghost: public GameObject {
 
 public:
 	void randDirection(int dir, int& count);
+	char drawchar() { return (char)234; }
 };
 #endif
 
