@@ -646,6 +646,7 @@ void ThePacmanGame::settings() {
 		system("CLS");
 		boardNum = -1;
 		board.boardname = "";
+		score = 0;
 		init();
 	}
 }
