@@ -21,10 +21,10 @@ public:
 	}
 	void draw(char ch); /*to draw the figure*/
 	void move(int direction);
-	const int getX() { return x; };
-	const int getY() { return y; };
-	const int getfirstX() { return firstx; };
-	const int getfirstY() { return firsty; };
+	const int getX() const { return x; };
+	const int getY() const { return y; };
+	const int getfirstX() const { return firstx; };
+	const int getfirstY() const { return firsty; };
 };
 
 #endif

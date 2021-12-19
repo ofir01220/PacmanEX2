@@ -18,13 +18,13 @@ public:
 	void holdingTime() {
 		holdTime--;
 	}
-	const int LifeTime() {
+	const int LifeTime() const {
 		return lifeTime;
 	}
-	const int HoldTime() {
+	const int HoldTime() const {
 		return holdTime;
 	}
-	const int fruitOn() { return On; }
+	const int fruitOn() const { return On; }
 	void setFruitOn(int i) { On = i; }
 	void setLife(const int k) { lifeTime = k; }
 	void setHold(const int k) { holdTime = k; }

@@ -5,7 +5,7 @@
 #include <fstream>
 namespace fs = std::filesystem;
 
-void Board::PrintBoard() { //print the game screan.
+void Board::PrintBoard() { /*print the game screan.*/
 	for (int i = 0; i < rowboard1; i++) {
 		for (int k = 0; k < colboard1; k++) {
 				cout << this->boardArr[i][k];
@@ -30,7 +30,7 @@ void Board::setBoardRow(int row) {
 	this->rowboard1 = row;
 }
 
-void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) {
+void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int boardNum) { /*Function to get the boards from the directory path or from the user.*/
 	breadCrumbs = numOfGhosts = 0;
 	clearBoard();
 	initVec();
@@ -137,7 +137,7 @@ void Board::initMat() {
 		}
 }
 
-void Board::getBoardFromUser() {
+void Board::getBoardFromUser() {/*function to get the board by the user request.*/
 	ifstream myReadFile;
 	bool flag = FALSE;
 	cout << "Please Enter A File's Name:";
@@ -173,7 +173,7 @@ void Board::initVec() {
 		posForFruit.pop_back();
 }
 
-Board::Board() {
+Board::Board() { /*this constractur will get the file names from the directory path as we create a board object.*/
 	std::string path = ".";
 	for (const auto& entry : fs::directory_iterator(path)) {
 		if (entry.path().filename().extension() == ".screen") {

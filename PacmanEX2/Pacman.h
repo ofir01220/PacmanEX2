@@ -19,7 +19,7 @@ public:
 	void initilizeCrumbs(int number) {
 		crumbs = number;
 	}
-	const int Crumbs() {
+	const int Crumbs() const {
 		return crumbs;
 	}
 	char drawchar() { return char(002); }

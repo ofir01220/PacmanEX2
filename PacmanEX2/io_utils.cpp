@@ -1,7 +1,9 @@
 #include "io_utils.h"
 
-using namespace std;
-
+using std::cout;
+using std::cin;
+using std::endl;
+using std::flush;
 #ifndef WINDOWS
 void gotoxy(int x, int y) {}
 int _getch(void) { return 0; }
