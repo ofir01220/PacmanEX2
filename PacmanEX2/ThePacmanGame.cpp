@@ -481,6 +481,7 @@ void ThePacmanGame::movingThroughTunnel() {
 
 vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point src, Point dest)
 {
+	int i = 0;
 	/*stores the moves of the directions of cells*/
 	int dRow[4] = { -1, 0, 0, 1 };
 	int dCol[4] = { 0, -1, 1, 0 };
@@ -507,6 +508,7 @@ vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point
 	while (!q.empty()) {
 		Node curr = q.front();
 		Point pt = curr.pt;
+		i++;
 
 		/*if we reached the destination, find the path*/
 		if (pt.getX() == dest.getX() && pt.getY() == dest.getY()) {
@@ -564,10 +566,14 @@ vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point
 				distance[row][col] = curr.dist + 1; /*update the distance*/
 			}
 		}
+		if (i == 2000)
+			break;
 	}
-
-	if (!ok) /*if the destination is not reachable*/
-		return (vector<int>)-1;
+		if (!ok) {   /*if the destination is not reachable*/
+			vector<int> noPath;
+			noPath.push_back(-1);
+			return noPath;
+		}
 }
 
 void ThePacmanGame::ghostMovementBest() {
