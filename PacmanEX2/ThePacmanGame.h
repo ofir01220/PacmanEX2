@@ -9,6 +9,11 @@ class ThePacmanGame {
   
     Pacman player;
     int numOfBoards;
+    vector<int> pacmanMoves;
+    vector<int> ghostsMoves;
+    vector<int> fruitMoves;
+    vector<int> gameMoves;
+    int mode = 1;
     int boardNum = 1;
     int sleepTime = 200;
     int ifPause = 0;
@@ -51,8 +56,11 @@ public:
     void initFruit();
     void fruitMovment();
     void avoidTunnelsFruit();
+    int getGameMode() { return mode; }
     int checkCollisionFruit();
+    void setmode(int k) { mode = k;}
     void pacmanEatFruit();
     void ghostEatFruit();
+    void saveMode();
 };
 #endif
