@@ -1,10 +1,10 @@
 #include "GameObject.h"
 
-void GameObject::move()
+void GameObject::move(bool t)
 {
-	body.draw(' ');
+	body.draw(' ', t);
 	body.Point::move(direction);
-	body.draw(figure);
+	body.draw(figure, t);
 }
 
 void GameObject::randDirection(int dir, int& count) {

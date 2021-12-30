@@ -2,98 +2,131 @@
 
 void ThePacmanGame::init()
 {
+	if (mode == 3)
+		sleepTime = 0;
 	player.setArrowKeys("wxadsWXADS");
 	player.setFigure(player.drawchar());
-	board.activateBoard(player, ghost, this->numOfGhosts,boardNum);
-	for(int i = 0; i < numOfGhosts; i++)
+	board.activateBoard(player, ghost, this->numOfGhosts, boardNum);
+	for (int i = 0; i < numOfGhosts; i++)
 		ghost[i].setFigure(ghost[i].drawchar());
 	player.initilizeCrumbs(board.breadCrumbs);
-	board.PrintBoard();
-	printCreatures();
+	if (mode != 3) {
+		board.PrintBoard();
+		printCreatures();
+	}
 	board.initMat();
 }
-void ThePacmanGame::run() 
+void ThePacmanGame::run()
 {
+	srand((int)time(NULL));
 	char key = 0;
-	int dir = UP, start = FALSE, life = 3, lastDir, ghostDelay = FALSE, ghostDir[4] = { 0,0 }, flag = 0, countMovment = 0;
-	printCreatures();
-	gotoxy(board.printx, board.printy);
-	cout << "score: " << score << ' ' << "life: " << life;
-	gotoxy(board.printx, board.printy + 1);
-	cout << "Difficult Level: " << board.difficult + 1;
+	int dir = UP, start = FALSE, life = 3, lastDir, ghostDelay = FALSE, ghostDir[4] = { 0,0 }, flag = 0, countMovment = 0, stop = 0;
+	bool dontPrint = TRUE;
+	if (mode == 3)
+		dontPrint = FALSE;
+	if (mode != 3) {
+		printCreatures();
+		gotoxy(board.printx, board.printy);
+		cout << "score: " << score << ' ' << "life: " << life;
+		gotoxy(board.printx, board.printy + 1);
+		cout << "Difficult Level: " << board.difficult + 1;
+	}
+	if (mode == 2 || mode == 3)
+		ghostDelay = TRUE;
 	do {
 		lastDir = dir; /*if the player selects a direction that will hit a wall, we avoid that direction and continue on the last direction (see lines 29-31)*/
-		if (_kbhit() && mode != 2)
-		{
+		if (_kbhit() && mode != 2 && mode != 3) {
 			key = _getch();
 			if ((player.getDirection(key)) != -1)
 				ifPause = 1;
-			checkValidKey(key, dir, lastDir, life, flag); /*check if the pressed key is a valid key(move or pause)*/
+			checkValidKey(key, dir, lastDir, life, flag, stop); /*check if the pressed key is a valid key(move or pause)*/
+		}
+
+		if ((mode == 2  || mode == 3) && stop == 0) {
+			getInputs();
+			ifPause = 1;
+			stop = 1;
+			reverse(pacmanMoves.begin(), pacmanMoves.end());
+			reverse(ghostsMoves.begin(), ghostsMoves.end());
+			reverse(fruitMoves.begin(), fruitMoves.end());
+			reverse(gameMoves.begin(), gameMoves.end());
+		}
+		if ((mode == 2 || mode == 3) && ifPause) {
+				dir = pacmanMoves[pacmanMoves.size() - 1];
+				pacmanMoves.pop_back();
 		}
 		start = checkCollisionPacman(dir);
-		if (!start) {
+		if (!start && (mode != 2 && mode != 3)) {
 			dir = lastDir;
 			start = checkCollisionPacman(dir);
 		}
 		player.setDirection(dir);
 		if (start && ifPause) {
-			player.move();
+			player.move(dontPrint);
 			if (mode == 1)
 				pacmanMoves.push_back(dir);
+			numOfMoves++;
 			movingThroughTunnel(); /*let pacman an option to move through tunnels*/
 			yummy(life); /*checks if the pacman ate a crumb.*/
 			flag = 1;
 		}
-		else if (!start && ifPause && mode == 1)
-			pacmanMoves.push_back(5);
+		else if (!start && ifPause && mode == 1) {
+			pacmanMoves.push_back(dir);
+			numOfMoves++;
+		}
+		else if (!start && ifPause && (mode == 2 || mode == 3)) {
+			numOfMoves++;
+		}
 
-		if (flag == 1) /*starts the sleep function only if the game starts*/
-			Sleep(sleepTime);
-
+		Sleep(sleepTime);
 		GhostEatPacman(life, flag, start, dir, ghostDir);
 		pacmanEatFruit();
+		
 		if ((ghostDelay == TRUE) && (flag)) { /*to make the ghost go 2X slower than the pacman*/
-			selectedMovmentDiff(ghostDir, countMovment);
+			selectedMovmentDiff(ghostDir, countMovment, dontPrint);
 			countMovment++;
 			ghostDelay = FALSE;
+			GhostEatPacman(life, flag, start, dir, ghostDir);
+			pacmanEatFruit();
 		}
-		else
+		else {
 			ghostDelay = TRUE;
-		GhostEatPacman(life, flag, start, dir, ghostDir);
-		pacmanEatFruit();
-
-	} while (endGameConditions(life, flag));
+		}
+		if (mode == 3) 
+			printWaitingTime();
+		
+	} while (endGameConditions(life, flag, stop));
 
 	system("CLS");
 }
 
 
 
-int ThePacmanGame::checkCollisionPacman(int dir) /*check if the next move is valid.*/
+int ThePacmanGame::checkCollisionPacman(const int dir) /*check if the next move is valid.*/
 {
 	switch (dir) {
-	case UP: 
+	case UP:
 		if (board.boardArr[player.body.getY() - 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case DOWN: 
+	case DOWN:
 		if (board.boardArr[player.body.getY() + 1][player.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case LEFT: 
-		if  (board.boardArr[player.body.getY()][player.body.getX() - 1] == char(178))
+	case LEFT:
+		if (board.boardArr[player.body.getY()][player.body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case RIGHT: 
+	case RIGHT:
 		if (board.boardArr[player.body.getY()][player.body.getX() + 1] == char(178))
 			return 0;
 		else
@@ -101,7 +134,7 @@ int ThePacmanGame::checkCollisionPacman(int dir) /*check if the next move is val
 
 		break;
 	case 4: // (4)- STAY
-		return 1;
+		return 0;
 		break;
 	default:
 		return 0;
@@ -125,9 +158,9 @@ void ThePacmanGame::mainMenu() {
 		choice = _getch();
 		if (choice != '1' && choice != '8' && choice != '9' && choice != '3')
 			choice = '0';
-		if (choice == '3') 
+		if (choice == '3')
 			settings();
-		
+
 		if (choice == '8') { /*INSTRUCTIONS*/
 			instructions();
 			while (!_kbhit())
@@ -193,7 +226,7 @@ void ThePacmanGame::chooseLevel() {/*Choose the difficult of the game*/
 	}
 }
 
-void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
+void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag, int& stop) {
 	system("CLS");
 	cout << "******************" << endl;
 	cout << "******PAUSE*******" << endl;
@@ -213,6 +246,8 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 		dir = lastDir = 0;
 		flag = 0;
 		board.difficult = 0;
+		stop = 0;
+		makeEmptyVec();
 		system("CLS");
 		mainMenu();
 		init();
@@ -223,6 +258,8 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 		life = 3;
 		dir = lastDir = 0;
 		flag = 0;
+		stop = 0;
+		makeEmptyVec();
 		system("CLS");
 		init(); /*to init the game from the begining */
 	}
@@ -245,44 +282,58 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag) {
 	cout << "Difficult Level: " << board.difficult + 1;
 }
 
-int ThePacmanGame::endGameConditions(const int life, int &flag) {
+int ThePacmanGame::endGameConditions(const int life, int& flag, int& stop) {
 	if (player.Crumbs() == 0 && (boardNum == board.numOfBoards || boardNum == -1)) { /*max point.*/
-		winGame();
+		check();
+		if (mode != 3)
+			winGame();
 		score = 0;
 		board.difficult = 0;
 		flag = 0;
 		boardNum = 1;
 		ifPause = 0;
 		if (mode == 1) {
-			gameMoves.push_back(1);
+			gameMoves.push_back(numOfMoves);
 			saveMode();
 		}
+		makeEmptyVec();
+		stop = 0;
+		numOfMoves = 0;
 		return 0;
 	}
 	else if (player.Crumbs() == 0) {
+		check();
 		if (mode == 1) {
-			gameMoves.push_back(1);
+			gameMoves.push_back(numOfMoves);
 			saveMode();
 		}
+		makeEmptyVec();
 		boardNum++;
 		if (board.difficult != 2)
 			board.difficult = board.difficult + 1;
 		system("CLS");
 		init();
 		flag = 0;
+		stop = 0;
+		numOfMoves = 0;
 	}
 	else if (life == 0) {
+		check();
+		EndGameMode3();
 		if (mode == 1) {
-			gameMoves.push_back(-1);
+			gameMoves.push_back(numOfMoves);
 			saveMode();
 		}
-		lostGame();
+		makeEmptyVec();
+		if (mode != 3)
+			lostGame();
 		boardNum = 1;
 		score = 0;
+		stop = 0;
+		numOfMoves = 0;
 		return 0;
 	}
-	else if (mode == 1 && ifPause)
-		gameMoves.push_back(2);
+	
 	return 1; /*continue the game.*/
 }
 
@@ -312,28 +363,30 @@ void ThePacmanGame::lostGame() {
 	system("CLS");
 }
 
-void ThePacmanGame::yummy(int life) {
+void ThePacmanGame::yummy(const int life) {
 	if (board.boardArr[player.body.getY()][player.body.getX()] == '*') { /*if the user ate crumb.*/
 		board.boardArr[player.body.getY()][player.body.getX()] = ' '; /*we delete the crumb from the board*/
 		score++;
 		player.eatCrumb();
-		gotoxy(board.printx, board.printy);
-		cout << "score: " << score << ' ' << "life: " << life;
-		gotoxy(board.printx, board.printy + 1);
-		cout << "Difficult Level: " << board.difficult + 1;
+		if (mode != 3) {
+			gotoxy(board.printx, board.printy);
+			cout << "score: " << score << ' ' << "life: " << life;
+			gotoxy(board.printx, board.printy + 1);
+			cout << "Difficult Level: " << board.difficult + 1;
+		}
 	}
 }
 
-void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, int& flag) {
+void ThePacmanGame::checkValidKey(int key, int& dir, int& lastDir, int& life, int& flag, int& stop) {
 	if (key == ESC)
-		pause(dir, life, lastDir, flag);
+		pause(dir, life, lastDir, flag, stop);
 
 
 	if ((player.getDirection(key)) != -1)
 		dir = player.getDirection(key);
 }
 
-void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
+void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment, const bool dontPrint) {
 
 	if (countMovment == 21) {
 		ghostDir[0] = rand() % 4;
@@ -344,23 +397,29 @@ void ThePacmanGame::ghostMovementNovice(int* ghostDir, int& countMovment) {
 	}
 	avoidTunnels(ghostDir);
 	for (int i = 0; i < numOfGhosts; i++) {
+		if (mode == 2 || mode == 3) {
+			ghostDir[i] = ghostsMoves[ghostsMoves.size() - 1];
+			ghostsMoves.pop_back();
+		}
 		while (!checkCollisionGhost(ghostDir[i], i)) /* Checks if the next move is not valid. */
 			ghostDir[i] = rand() % 4;
 		int xBeforeMove = ghost[i].body.getX();
 		int yBeforeMove = ghost[i].body.getY();
 		ghost[i].setDirection(ghostDir[i]);
-		ghost[i].move();
+		ghost[i].move(dontPrint);
 		if (mode == 1)
-		ghostsMoves.push_back(ghostDir[i]);
+			ghostsMoves.push_back(ghostDir[i]);
 
-		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
+		if (board.boardArr[yBeforeMove][xBeforeMove] == '*' && mode != 3) {
 			gotoxy(xBeforeMove, yBeforeMove);
 			cout << '*';
 		}
 	}
+	if (mode != 3)
+		printCreatures();
 }
 
-int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
+int ThePacmanGame::checkCollisionGhost(const int dir, const int ghostNum) {
 	switch (dir) {
 	case UP:
 		if (board.boardArr[ghost[ghostNum].body.getY() - 1][ghost[ghostNum].body.getX()] == char(178))
@@ -376,14 +435,14 @@ int ThePacmanGame::checkCollisionGhost(int dir, int ghostNum) {
 			return 1;
 
 		break;
-	case LEFT: 
+	case LEFT:
 		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case RIGHT: 
+	case RIGHT:
 		if (board.boardArr[ghost[ghostNum].body.getY()][ghost[ghostNum].body.getX() + 1] == char(178))
 			return 0;
 		else
@@ -401,8 +460,12 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 	int xPlayer = player.body.getX(), yPlayer = player.body.getY();
 	for (int i = 0; i < numOfGhosts; i++) {
 		if ((xPlayer == ghost[i].body.getX()) && (yPlayer == ghost[i].body.getY())) {
-			if (mode == 1)
-				gameMoves.push_back(0); 
+			if (mode == 1) {
+				gameMoves.push_back(numOfMoves);
+			}
+			else if (mode == 2 || mode == 3) {
+				check();
+			}
 			/* If one of the ghosts eat pacman. */
 			--life;
 			flag = 0;
@@ -412,17 +475,22 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 			}
 			player.body.setXandY(player.body.getfirstX(), player.body.getfirstY());
 			system("CLS");
-			board.PrintBoard();
-			printCreatures();
-			player.setDirection(0);
+			if (mode != 3) {
+				board.PrintBoard();
+				printCreatures();
+			}
+			player.setDirection(4);
+			dir = 4;
 			for (int k = 0; k < numOfGhosts; k++) {
 				ghost[k].setDirection(0);
-				dir = ghostDir[k] = 0;
+				ghostDir[k] = 0;
 			}
-			gotoxy(board.printx, board.printy);
-			cout << "score: " << score << ' ' << "life: " << life;
-			gotoxy(board.printx, board.printy + 1);
-			cout << "Difficult Level: " << board.difficult + 1;
+			if (mode != 3) {
+				gotoxy(board.printx, board.printy);
+				cout << "score: " << score << ' ' << "life: " << life;
+				gotoxy(board.printx, board.printy + 1);
+				cout << "Difficult Level: " << board.difficult + 1;
+			}
 			break; /* avoid from being eaten twice(if the ghosts are on the same spot) */
 		}
 	}
@@ -450,16 +518,20 @@ void ThePacmanGame::avoidTunnels(int ghostDir[]) {
 }
 
 void ThePacmanGame::printCreatures() {
-	player.printBody(player.drawchar());
-	for (int i = 0; i < numOfGhosts; i++) {
-		ghost[i].printBody(ghost[i].drawchar());
+	if (mode != 3) {
+		player.printBody(player.drawchar());
+		for (int i = 0; i < numOfGhosts; i++) {
+			ghost[i].printBody(ghost[i].drawchar());
+		}
 	}
 }
 
 void ThePacmanGame::movingThroughTunnel() {
 	if (player.body.getY() == board.topL.getY()) {
-		gotoxy(player.body.getX(), player.body.getY());
-		cout << ' ';
+		if (mode != 3) {
+			gotoxy(player.body.getX(), player.body.getY());
+			cout << ' ';
+		}
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
 			player.eatCrumb();
@@ -468,8 +540,10 @@ void ThePacmanGame::movingThroughTunnel() {
 		player.body.setXandY(player.body.getX(), board.botR.getY() - 1);
 	}
 	if (player.body.getY() == board.botR.getY()) {
-		gotoxy(player.body.getX(), player.body.getY());
-		cout << ' ';
+		if (mode != 3) {
+			gotoxy(player.body.getX(), player.body.getY());
+			cout << ' ';
+		}
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
 			player.eatCrumb();
@@ -478,8 +552,10 @@ void ThePacmanGame::movingThroughTunnel() {
 		player.body.setXandY(player.body.getX(), board.topL.getY());
 	}
 	if (player.body.getX() == board.topL.getX()) {
-		gotoxy(player.body.getX(), player.body.getY());
-		cout << ' ';
+		if (mode != 3) {
+			gotoxy(player.body.getX(), player.body.getY());
+			cout << ' ';
+		}
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
 			player.eatCrumb();
@@ -488,8 +564,10 @@ void ThePacmanGame::movingThroughTunnel() {
 		player.body.setXandY(board.botR.getX() - 1, player.body.getY());
 	}
 	if (player.body.getX() == board.botR.getX()) {
-		gotoxy(player.body.getX(), player.body.getY());
-		cout << ' ';
+		if (mode != 3) {
+			gotoxy(player.body.getX(), player.body.getY());
+			cout << ' ';
+		}
 		if (board.boardArr[player.body.getY()][player.body.getX()] == '*') {
 			score++;
 			player.eatCrumb();
@@ -497,13 +575,15 @@ void ThePacmanGame::movingThroughTunnel() {
 		}
 		player.body.setXandY(board.topL.getX(), player.body.getY());
 	}
-	gotoxy(player.body.getX(), player.body.getY());
-	cout << player.drawchar();
-	gotoxy(board.printx, board.printy);
-	cout << "score: " << score;
+	if (mode != 3) {
+		gotoxy(player.body.getX(), player.body.getY());
+		cout << player.drawchar();
+		gotoxy(board.printx, board.printy);
+		cout << "score: " << score;
+	}
 }
 
-vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point src, Point dest)
+vector<int> ThePacmanGame::shortestPath(char mat[][80], int rRow, int rCol, Point src, Point dest)
 {
 	int i = 0;
 	/*stores the moves of the directions of cells*/
@@ -593,75 +673,84 @@ vector<int> ThePacmanGame::shortestPath(char mat[][80],int rRow, int rCol, Point
 		if (i == 2000)
 			break;
 	}
-		if (!ok) {   /*if the destination is not reachable*/
-			vector<int> noPath;
-			noPath.push_back(-1);
-			return noPath;
-		}
+	if (!ok) {   /*if the destination is not reachable*/
+		vector<int> noPath;
+		noPath.push_back(-1);
+		return noPath;
+	}
 }
 
-void ThePacmanGame::ghostMovementBest() {
+void ThePacmanGame::ghostMovementBest(const bool dontPrint) {
 	Point pacman, currGhost;
 	vector<int> path;
 	int lastX, lastY;
 	for (int i = 0; i < numOfGhosts; i++) {
-		pacman.setXandY(player.body.getY(), player.body.getX());
-		currGhost.setXandY(ghost[i].body.getY(), ghost[i].body.getX());
-		path = shortestPath(board.mat, board.rowboard1, board.colboard1, currGhost, pacman);
-		if (path[0] != -1) {
-			ghost[i].setDirection(path[0]);
+		if (mode == 2 || mode == 3) {
+			ghost[i].setDirection(ghostsMoves[ghostsMoves.size() - 1]);
+			ghostsMoves.pop_back();
 			lastX = ghost[i].body.getX();
 			lastY = ghost[i].body.getY();
-			ghost[i].move();
-			if (mode == 1)
-				ghostsMoves.push_back(path[0]);
+			ghost[i].move(dontPrint);
 			if (board.boardArr[lastY][lastX] == '*') {
 				gotoxy(lastX, lastY);
 				cout << '*';
 			}
 		}
-		else if (mode == 1)
-			ghostsMoves.push_back(-1); /*the ghost will not move*/
+		else {
+			pacman.setXandY(player.body.getY(), player.body.getX());
+			currGhost.setXandY(ghost[i].body.getY(), ghost[i].body.getX());
+			path = shortestPath(board.mat, board.rowboard1, board.colboard1, currGhost, pacman);
+			if (path[0] != -1) {
+				ghost[i].setDirection(path[0]);
+				lastX = ghost[i].body.getX();
+				lastY = ghost[i].body.getY();
+				if (mode == 1)
+					ghostsMoves.push_back(path[0]);
+				ghost[i].move(dontPrint);
+				if (board.boardArr[lastY][lastX] == '*') {
+					gotoxy(lastX, lastY);
+					cout << '*';
+				}
+			}
+			else if (mode == 1)
+				ghostsMoves.push_back(-1); /*the ghost will not move*/
 
-		
-		board.mat[player.body.getY()][player.body.getX()] = '1';
-		board.mat[ghost[i].body.getY()][ghost[i].body.getX()] = '1';
+
+			board.mat[player.body.getY()][player.body.getX()] = '1';
+			board.mat[ghost[i].body.getY()][ghost[i].body.getX()] = '1';
+		}
 	}
+	if (mode == 3)
+		system("CLS");
 }
 
-void ThePacmanGame::selectedMovmentDiff(int* ghostDir,int &countSteps) {
-	if (board.difficult == 0){
-		ghostMovementNovice(ghostDir, countSteps);
+void ThePacmanGame::selectedMovmentDiff(int* ghostDir, int& countSteps, const bool dontPrint) {
+	if (board.difficult == 0) {
+		ghostMovementNovice(ghostDir, countSteps, dontPrint);
 	}
 	else if (board.difficult == 1) {
-		ghostMovementGood(ghostDir, countSteps);
+		ghostMovementGood(ghostDir, countSteps,dontPrint);
 	}
 	else if (board.difficult == 2) {
-		ghostMovementBest();
+		ghostMovementBest(dontPrint);
 	}
 	ghostEatFruit();
-	if (fruit.HoldTime() == 0) {
-		initFruit();
-		if (mode == 1) {
-			fruitMoves.push_back(-1); 
-			fruitMoves.push_back(fruit.addScore());
-			fruitMoves.push_back(fruit.body.getY());
-			fruitMoves.push_back(fruit.body.getX());
+		if (fruit.HoldTime() == 0) {
+			initFruit();
+			fruit.setFruitOn(1);
 		}
-		fruit.setFruitOn(1);
-	}
-	if (fruit.LifeTime() != 0) {
-		fruitMovment();
-		fruit.runningTime();
-	}
-	else {
-		if (mode == 1)
-			fruitMoves.push_back(-2);
-		fruit.setFruitOn(0);
-		gotoxy(fruit.body.getX(), fruit.body.getY());
-		cout << board.boardArr[fruit.body.getY()][fruit.body.getX()];
-		fruit.holdingTime();
-	}
+		if (fruit.LifeTime() != 0) {
+			fruitMovment(dontPrint);
+			fruit.runningTime();
+		}
+		else {
+			fruit.setFruitOn(0);
+			if (mode != 3) {
+				gotoxy(fruit.body.getX(), fruit.body.getY());
+				cout << board.boardArr[fruit.body.getY()][fruit.body.getX()];
+			}
+			fruit.holdingTime();
+		}
 	ghostEatFruit();
 
 }
@@ -681,8 +770,8 @@ void ThePacmanGame::settings() {
 
 	if (choice != '1' && choice != '2' && choice != '3')
 		choice = '0';
-	else if (choice == '1') 
-			chooseLevel();
+	else if (choice == '1')
+		chooseLevel();
 	else if (choice == '2')
 		selectGameSpeed();
 	else if (choice == '3') {
@@ -694,12 +783,12 @@ void ThePacmanGame::settings() {
 	}
 }
 
-void ThePacmanGame::ghostMovementGood(int* ghostDir, int& countMovment) {
+void ThePacmanGame::ghostMovementGood(int* ghostDir, int& countMovment, const bool dontPrint) {
 	if (countMovment > 14) {
-		ghostMovementNovice(ghostDir, countMovment);
+		ghostMovementNovice(ghostDir, countMovment, dontPrint);
 	}
 	else
-		ghostMovementBest();
+		ghostMovementBest(dontPrint);
 
 	if (countMovment > 20)
 		countMovment = 0;
@@ -742,72 +831,98 @@ void ThePacmanGame::selectGameSpeed() {
 }
 
 void ThePacmanGame::initFruit() {
-	fruit.initRandNum();
-	fruit.setFigure(fruit.drawchar());
-	fruit.setHold(40);
-	fruit.setLife(60);
-	int i = rand() % board.posForFruit.size();
-	fruit.body.setXandY(board.posForFruit[i].getX(), board.posForFruit[i].getY());
+	if (mode == 1) {
+		fruit.initRandNum();
+		fruit.setFigure(fruit.drawchar());
+		fruit.setHold(40);
+		fruit.setLife(60);
+		int i = rand() % board.posForFruit.size();
+		fruit.body.setXandY(board.posForFruit[i].getX(), board.posForFruit[i].getY());
+		fruitMoves.push_back(fruit.addScore());
+		fruitMoves.push_back(fruit.body.getY());
+		fruitMoves.push_back(fruit.body.getX());
+	}
+	else if (mode == 2 || mode == 3) {
+		fruit.initRandNum(fruitMoves[fruitMoves.size() - 1]);
+		fruitMoves.pop_back();
+		int y = fruitMoves[fruitMoves.size() - 1];
+		fruitMoves.pop_back();
+		int x = fruitMoves[fruitMoves.size() - 1];
+		fruitMoves.pop_back();
+		fruit.setFigure(fruit.drawchar());
+		fruit.setHold(40);
+		fruit.setLife(60);
+		fruit.body.setXandY(x, y);
+	}
 }
 
-void ThePacmanGame::fruitMovment() {
+void ThePacmanGame::fruitMovment(const bool dontPrint) {
 	int dir;
 	avoidTunnelsFruit();
 	while (!checkCollisionFruit()) { /* Checks if the next move is not valid. */
 		dir = rand() % 4;
 		fruit.setDirection(dir);
 	}
-		int xBeforeMove = fruit.body.getX();
-		int yBeforeMove = fruit.body.getY();
-		fruit.move();
-		if (mode == 1)
-			fruitMoves.push_back(dir);
+	dir = fruit.getDir();
+	int xBeforeMove = fruit.body.getX();
+	int yBeforeMove = fruit.body.getY();
+	if (mode == 2 || mode == 3) {
+			dir = fruitMoves[fruitMoves.size() - 1];
+			fruitMoves.pop_back();
+			fruit.setDirection(dir);
+		
+	}
+	fruit.move(dontPrint);
+	if (mode == 1)
+		fruitMoves.push_back(dir);
 
-		if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
-			gotoxy(xBeforeMove, yBeforeMove);
-			cout << '*';
-		}
+	if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
+		gotoxy(xBeforeMove, yBeforeMove);
+		cout << '*';
+	}
+	if (mode == 3)
+		system("CLS");
 }
 
 void ThePacmanGame::avoidTunnelsFruit() {
-		if (fruit.body.getX() == board.botR.getX())
-			fruit.setDirection(LEFT);
+	if (fruit.body.getX() == board.botR.getX())
+		fruit.setDirection(LEFT);
 
-		else if (fruit.body.getX() == board.topL.getX())
-			fruit.setDirection(RIGHT);
+	else if (fruit.body.getX() == board.topL.getX())
+		fruit.setDirection(RIGHT);
 
-		else if (fruit.body.getY() == board.botR.getY())
-			fruit.setDirection(UP);
+	else if (fruit.body.getY() == board.botR.getY())
+		fruit.setDirection(UP);
 
-		else if (fruit.body.getY() == board.topL.getY())
-			fruit.setDirection(DOWN);
-	
+	else if (fruit.body.getY() == board.topL.getY())
+		fruit.setDirection(DOWN);
+
 }
 
 int ThePacmanGame::checkCollisionFruit() {
 	switch (fruit.direction) {
-	case UP: 
+	case UP:
 		if (board.boardArr[fruit.body.getY() - 1][fruit.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case DOWN: 
+	case DOWN:
 		if (board.boardArr[fruit.body.getY() + 1][fruit.body.getX()] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case LEFT: 
+	case LEFT:
 		if (board.boardArr[fruit.body.getY()][fruit.body.getX() - 1] == char(178))
 			return 0;
 		else
 			return 1;
 
 		break;
-	case RIGHT: 
+	case RIGHT:
 		if (board.boardArr[fruit.body.getY()][fruit.body.getX() + 1] == char(178))
 			return 0;
 		else
@@ -825,18 +940,23 @@ void ThePacmanGame::pacmanEatFruit() {
 	if (fruit.fruitOn() == 1) {
 		if (player.body.getX() == fruit.body.getX() && player.body.getY() == fruit.body.getY()) {
 			score += fruit.addScore();
+			fruit.setFruitOn(0);
 			fruit.setHold(40);
 			fruit.setLife(0);
-			gotoxy(board.printx, board.printy);
-			cout << "score: " << score;
+			if (mode != 3) {
+				gotoxy(board.printx, board.printy);
+				cout << "score: " << score;
+			}
 		}
 	}
+	printCreatures();
 }
 
 void ThePacmanGame::ghostEatFruit() {
 	if (fruit.fruitOn() == 1) {
-		for (int i = 0; i < numOfGhosts; i++){
+		for (int i = 0; i < numOfGhosts; i++) {
 			if (ghost[i].body.getX() == fruit.body.getX() && ghost[i].body.getY() == fruit.body.getY()) {
+				fruit.setFruitOn(0);
 				fruit.setHold(40);
 				fruit.setLife(0);
 			}
@@ -845,45 +965,133 @@ void ThePacmanGame::ghostEatFruit() {
 	printCreatures();
 }
 
-void ThePacmanGame::saveMode() { 
-	string fileName = board.boardname; 
+void ThePacmanGame::saveMode() {
+	string fileName = board.boardname;
 	for (int k = 0; k < 6; k++)
 		fileName.pop_back();
 
 	fileName += "steps";
 	ofstream myReadFile;
-	myReadFile.open(fileName);
+	myReadFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
 	reverse(pacmanMoves.begin(), pacmanMoves.end());
 	size_t size = pacmanMoves.size();
-	for (int i = (int)size - 1; i >= 0; i--) {
+	for (int i = size - 1; i >= 0; i--) {
 		myReadFile << pacmanMoves[i];
+		myReadFile << ' ';
 		pacmanMoves.pop_back();
 	}
 	myReadFile << 99;
-	reverse( ghostsMoves.begin(), ghostsMoves.end());
-	 size = ghostsMoves.size();
-	for (int i = (int)size - 1; i >= 0; i--) {
+	myReadFile << ' ';
+	reverse(ghostsMoves.begin(), ghostsMoves.end());
+	size = ghostsMoves.size();
+	for (int i = size - 1; i >= 0; i--) {
 		myReadFile << ghostsMoves[i];
+		myReadFile << ' ';
 		ghostsMoves.pop_back();
 	}
 	myReadFile << 99;
+	myReadFile << ' ';
 	reverse(fruitMoves.begin(), fruitMoves.end());
-	 size = fruitMoves.size();
-	for (int i = (int)size - 1; i >= 0; i--) {
+	size = fruitMoves.size();
+	for (int i = size - 1; i >= 0; i--) {
 		myReadFile << fruitMoves[i];
+		myReadFile << ' ';
 		fruitMoves.pop_back();
 	}
 	myReadFile.close();
 	for (int k = 0; k < 5; k++)
 		fileName.pop_back();
 	fileName += "result";
-	myReadFile.open(fileName);
+	myReadFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
 	reverse(gameMoves.begin(), gameMoves.end());
-	 size = gameMoves.size();
-	for (int i = (int)size - 1; i >= 0; i--) {
+	size = gameMoves.size();
+	for (int i = size - 1; i >= 0; i--) {
 		myReadFile << gameMoves[i];
+		myReadFile << ' ';
 		gameMoves.pop_back();
 	}
 	myReadFile.close();
 
+}
+void ThePacmanGame::getInputs() {
+	int integer;
+	string fileName = board.boardname;
+	for (int k = 0; k < 6; k++)
+		fileName.pop_back();
+
+	fileName += "steps";
+	ifstream myReadFile;
+	myReadFile.open(fileName);
+	myReadFile >> integer;
+	while (integer != 99) {
+		pacmanMoves.push_back(integer);
+		myReadFile >> integer;
+	}
+	do {
+		myReadFile >> integer;
+		if (integer != 99)
+			ghostsMoves.push_back(integer);
+	} while (integer != 99);
+	do {
+		myReadFile >> integer;
+		if (integer != 99)
+			fruitMoves.push_back(integer);
+	} while (!myReadFile.eof());
+	myReadFile.close();
+	for (int k = 0; k < 5; k++)
+		fileName.pop_back();
+	fileName += "result";
+	myReadFile.open(fileName);
+	while (!myReadFile.eof()) {
+		myReadFile >> integer;
+		gameMoves.push_back(integer);
+	}
+	gameMoves.pop_back();
+	myReadFile.close();
+}
+
+void ThePacmanGame::check() {
+	if (mode == 2 || mode == 3) {
+		if (gameMoves[gameMoves.size() - 1] != numOfMoves && gameMoves[gameMoves.size() - 1] != (numOfMoves - 1)
+			&& gameMoves[gameMoves.size() - 1] != (numOfMoves + 1)) {
+			gameMoves.pop_back();
+			system("CLS");
+			cout << "test faild!";
+			exit(0);
+		}
+		gameMoves.pop_back();
+	}
+}
+
+void ThePacmanGame::makeEmptyVec() {
+	while (!pacmanMoves.empty())
+		pacmanMoves.pop_back();
+
+	while (!ghostsMoves.empty())
+		ghostsMoves.pop_back();
+
+	while (!fruitMoves.empty())
+		fruitMoves.pop_back();
+
+	while (!gameMoves.empty())
+		gameMoves.pop_back();
+}
+
+void ThePacmanGame::EndGameMode3() {
+	if (mode == 3) {
+		system("CLS");
+		cout << "Test Passed!" << endl;
+		exit(0);
+	}
+}
+
+void ThePacmanGame::printWaitingTime() {
+	system("CLS");
+	int i = numOfMoves % 30;
+	if (0 <= i && i <= 9)
+		cout << "Calculating." << endl;
+	else if (10 <= i && i <= 19)
+		cout << "Calculating.." << endl;
+	else
+		cout << "Calculating..." << endl;
 }

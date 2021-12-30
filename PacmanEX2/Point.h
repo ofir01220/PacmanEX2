@@ -19,7 +19,7 @@ public:
 		firstx = _x;
 		firsty = _y;
 	}
-	void draw(char ch); /*to draw the figure*/
+	void draw(char ch, bool t = TRUE); /*to draw the figure*/
 	void move(int direction);
 	const int getX() const { return x; };
 	const int getY() const { return y; };

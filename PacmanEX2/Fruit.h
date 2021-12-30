@@ -8,6 +8,7 @@ class Fruit : public GameObject {
 	int On = 0;
 	int randNum;
 public:
+	void initRandNum(int i) { randNum = i; }
 	void initRandNum() {
 		randNum = (5 + rand() % 5);
 	}

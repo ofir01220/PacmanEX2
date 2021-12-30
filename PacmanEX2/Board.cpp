@@ -45,8 +45,10 @@ void  Board::activateBoard(Pacman &p, Ghost ghost[], int &numOfGhosts, int board
 		system("CLS");
 	}
 	else {
-		if(numOfBoards != 0)
-		myReadFile.open(fileNames[boardNum - 1]);
+		if (numOfBoards != 0) {
+			myReadFile.open(fileNames[boardNum - 1]);
+			boardname = (fileNames[boardNum - 1]);
+		}
 		else {
 			cout << "There Are No '.screen' Files In The Directory Please Insert Screen Files" << endl;
 			exit(0);

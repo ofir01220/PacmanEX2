@@ -13,7 +13,7 @@ public:
 	{
 		figure = c;
 	}
-	void move();
+	void move(bool t = TRUE);
 	void randDirection(int dir, int& count);
 	void setDirection(int dir) 
 	{
@@ -24,6 +24,7 @@ public:
 		body.draw(ch);
 	}
 	virtual char drawchar() = 0;
+	const int getDir() const { return this->direction; }
 };
 
 

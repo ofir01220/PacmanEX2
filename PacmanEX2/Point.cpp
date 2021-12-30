@@ -1,9 +1,11 @@
 #include "Point.h"
 
-void Point::draw(char ch) {
-	gotoxy(x, y);
-	cout << ch;
-	gotoxy(0, 24);
+void Point::draw(char ch, bool t) {
+	if (t) {
+		gotoxy(x, y);
+		cout << ch;
+		gotoxy(0, 24);
+	}
 }
 
 void Point::move(int direction) {
