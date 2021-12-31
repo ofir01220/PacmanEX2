@@ -16,7 +16,7 @@ class ThePacmanGame {
     int mode = 2;
     int numOfMoves = 0;
     int boardNum = 1;
-    int sleepTime = 10;
+    int sleepTime = 1;
     int ifPause = 0;
     int score = 0;
     int numOfGhosts;
@@ -44,7 +44,7 @@ public:
     void ghostMovementGood(int* ghostDir, int& countMovment, const bool dontPrint);
     void GhostEatPacman(int& life, int& flag, int& start, int& dir, int* ghostDir);
     void avoidTunnels(int ghostDir[]); /* to not let the ghosts enter the tunnels */
-        void ghostMovementBest(const bool dontPrint);
+    void ghostMovementBest(const bool dontPrint);
     vector<int> shortestPath(char mat[][80], int rRow, int rCol, Point src, Point dest);
     struct Node {
         Point pt;

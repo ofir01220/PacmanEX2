@@ -285,6 +285,7 @@ void ThePacmanGame::pause(int& dir, int& life, int& lastDir, int& flag, int& sto
 int ThePacmanGame::endGameConditions(const int life, int& flag, int& stop) {
 	if (player.Crumbs() == 0 && (boardNum == board.numOfBoards || boardNum == -1)) { /*max point.*/
 		check();
+		EndGameMode3();
 		if (mode != 3)
 			winGame();
 		score = 0;
@@ -474,8 +475,8 @@ void ThePacmanGame::GhostEatPacman(int& life, int& flag, int& start, int& dir, i
 				ghost[k].body.setXandY(ghost[k].body.getfirstX(), ghost[k].body.getfirstY());
 			}
 			player.body.setXandY(player.body.getfirstX(), player.body.getfirstY());
-			system("CLS");
 			if (mode != 3) {
+				system("CLS");
 				board.PrintBoard();
 				printCreatures();
 			}
@@ -691,7 +692,7 @@ void ThePacmanGame::ghostMovementBest(const bool dontPrint) {
 			lastX = ghost[i].body.getX();
 			lastY = ghost[i].body.getY();
 			ghost[i].move(dontPrint);
-			if (board.boardArr[lastY][lastX] == '*') {
+			if (board.boardArr[lastY][lastX] == '*' && mode == 2) {
 				gotoxy(lastX, lastY);
 				cout << '*';
 			}
@@ -720,8 +721,6 @@ void ThePacmanGame::ghostMovementBest(const bool dontPrint) {
 			board.mat[ghost[i].body.getY()][ghost[i].body.getX()] = '1';
 		}
 	}
-	if (mode == 3)
-		system("CLS");
 }
 
 void ThePacmanGame::selectedMovmentDiff(int* ghostDir, int& countSteps, const bool dontPrint) {
@@ -876,12 +875,10 @@ void ThePacmanGame::fruitMovment(const bool dontPrint) {
 	if (mode == 1)
 		fruitMoves.push_back(dir);
 
-	if (board.boardArr[yBeforeMove][xBeforeMove] == '*') {
+	if (board.boardArr[yBeforeMove][xBeforeMove] == '*' && mode != 3) {
 		gotoxy(xBeforeMove, yBeforeMove);
 		cout << '*';
 	}
-	if (mode == 3)
-		system("CLS");
 }
 
 void ThePacmanGame::avoidTunnelsFruit() {
@@ -975,7 +972,7 @@ void ThePacmanGame::saveMode() {
 	myReadFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
 	reverse(pacmanMoves.begin(), pacmanMoves.end());
 	size_t size = pacmanMoves.size();
-	for (int i = size - 1; i >= 0; i--) {
+	for (int i = (int)size - 1; i >= 0; i--) {
 		myReadFile << pacmanMoves[i];
 		myReadFile << ' ';
 		pacmanMoves.pop_back();
@@ -984,7 +981,7 @@ void ThePacmanGame::saveMode() {
 	myReadFile << ' ';
 	reverse(ghostsMoves.begin(), ghostsMoves.end());
 	size = ghostsMoves.size();
-	for (int i = size - 1; i >= 0; i--) {
+	for (int i = (int)size - 1; i >= 0; i--) {
 		myReadFile << ghostsMoves[i];
 		myReadFile << ' ';
 		ghostsMoves.pop_back();
@@ -993,7 +990,7 @@ void ThePacmanGame::saveMode() {
 	myReadFile << ' ';
 	reverse(fruitMoves.begin(), fruitMoves.end());
 	size = fruitMoves.size();
-	for (int i = size - 1; i >= 0; i--) {
+	for (int i = (int)size - 1; i >= 0; i--) {
 		myReadFile << fruitMoves[i];
 		myReadFile << ' ';
 		fruitMoves.pop_back();
@@ -1005,7 +1002,7 @@ void ThePacmanGame::saveMode() {
 	myReadFile.open(fileName, std::ofstream::out | std::ofstream::trunc);
 	reverse(gameMoves.begin(), gameMoves.end());
 	size = gameMoves.size();
-	for (int i = size - 1; i >= 0; i--) {
+	for (int i = (int)size - 1; i >= 0; i--) {
 		myReadFile << gameMoves[i];
 		myReadFile << ' ';
 		gameMoves.pop_back();
@@ -1086,12 +1083,21 @@ void ThePacmanGame::EndGameMode3() {
 }
 
 void ThePacmanGame::printWaitingTime() {
-	system("CLS");
 	int i = numOfMoves % 30;
-	if (0 <= i && i <= 9)
+	if (0 <= i && i <= 9) {
 		cout << "Calculating." << endl;
-	else if (10 <= i && i <= 19)
+		gotoxy(12, 0);
+		cout << "  ";
+		gotoxy(0, 0);
+	}
+	else if (10 <= i && i <= 19) {
 		cout << "Calculating.." << endl;
-	else
+		gotoxy(13, 0);
+		cout << " ";
+		gotoxy(0, 0);
+	}
+	else {
 		cout << "Calculating..." << endl;
+		gotoxy(0, 0);
+	}
 }
