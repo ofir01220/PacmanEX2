@@ -13,7 +13,7 @@ class ThePacmanGame {
     vector<int> ghostsMoves;
     vector<int> fruitMoves;
     vector<int> gameMoves;
-    int mode = 2;
+    int mode = 3;
     int numOfMoves = 0;
     int boardNum = 1;
     int sleepTime = 1;
@@ -68,5 +68,6 @@ public:
     void makeEmptyVec();
     void EndGameMode3();
     void printWaitingTime();
+    void setSpeedInLoad();
 };
 #endif

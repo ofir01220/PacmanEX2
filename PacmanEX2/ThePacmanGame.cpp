@@ -2,8 +2,7 @@
 
 void ThePacmanGame::init()
 {
-	if (mode == 3)
-		sleepTime = 0;
+	setSpeedInLoad();
 	player.setArrowKeys("wxadsWXADS");
 	player.setFigure(player.drawchar());
 	board.activateBoard(player, ghost, this->numOfGhosts, boardNum);
@@ -1100,4 +1099,11 @@ void ThePacmanGame::printWaitingTime() {
 		cout << "Calculating..." << endl;
 		gotoxy(0, 0);
 	}
+}
+
+void ThePacmanGame::setSpeedInLoad() {
+	if (mode == 3)
+		sleepTime = 0;
+	if (mode == 2)
+		sleepTime = 70;
 }
